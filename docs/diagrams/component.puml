@@ -1,0 +1,35 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+Container(scripts, "Motor de Juegos (scripts.js)", "JavaScript")
+
+Component(particulas, "Sistema de Partículas", "Módulo", "Animación de fondo basada en canvas")
+Component(controladorJuegos, "Controlador de Juegos", "Módulo", "Controla ciclo de vida de juegos: iniciar/detener/reiniciar y limpieza de recursos")
+Component(snake, "Módulo Snake", "Módulo", "Lógica del juego Snake, input y colisiones")
+Component(pong, "Módulo Pong", "Módulo", "Lógica del juego Pong")
+Component(breakout, "Módulo Breakout", "Módulo", "Lógica del juego Breakout")
+Component(flappy, "Módulo Flappy", "Módulo", "Lógica del juego Flappy Bird")
+Component(simon, "Módulo Simon", "Módulo", "Lógica del juego Simon - patrones de colores")
+Component(ui, "Helpers UI", "Módulo", "Funciones para modales, rankings, toggles y temas")
+Component(adaptadorAlmacenamiento, "Adaptador de Almacenamiento", "Módulo", "Abstracción para localStorage: ajustes, puntuaciones, perfiles")
+Component(adaptadorRankings, "Adaptador de Rankings", "Módulo", "Cliente HTTP opcional para el servicio de rankings")
+
+System_Ext(servicioRankings, "Servicio de Rankings", "API externa opcional para puntuaciones globales")
+
+Rel(scripts, particulas, "render")
+Rel(scripts, controladorJuegos, "controla")
+Rel(controladorJuegos, snake, "inicia/detiene/reinicia")
+Rel(controladorJuegos, pong, "inicia/detiene/reinicia")
+Rel(controladorJuegos, breakout, "inicia/detiene/reinicia")
+Rel(controladorJuegos, flappy, "inicia/detiene/reinicia")
+Rel(controladorJuegos, simon, "inicia/detiene/reinicia")
+Rel(controladorJuegos, ui, "notifica / usa")
+Rel(ui, adaptadorAlmacenamiento, "lee/escribe ajustes y puntuaciones")
+Rel(controladorJuegos, adaptadorAlmacenamiento, "persiste estado y puntuaciones")
+Rel(adaptadorRankings, servicioRankings, "HTTP/HTTPS")
+Rel(controladorJuegos, adaptadorRankings, "envía puntuaciones (opcional)")
+
+
+@enduml

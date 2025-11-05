@@ -1,0 +1,23 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+
+Container(scripts, "Motor de Juegos (scripts.js)", "JavaScript")
+
+Component(controladorJuegos, "Controlador de Juegos", "Módulo", "Singleton que gestiona instancias de juegos. Métodos: iniciar(nombre), detener(), on(evento, cb)")
+Component(implementacionSnake, "Implementación Snake", "Clase/Módulo", "Métodos: init(canvas), loop(dt), handleInput(), end() - usa requestAnimationFrame")
+
+Component(adaptadorAlmacenamiento, "Adaptador de Almacenamiento", "Módulo", "API: get(clave), set(clave, valor), clear() - usa localStorage")
+Component(adaptadorRankings, "Adaptador de Rankings", "Módulo", "API: postPuntuacion(juego, payload), getTop(juego)")
+
+Rel(controladorJuegos, implementacionSnake, "invoca init/stop")
+Rel(controladorJuegos, adaptadorAlmacenamiento, "guarda puntuaciones y estado")
+Rel(controladorJuegos, adaptadorRankings, "envía puntuaciones (opcional)")
+
+note "Sugerencia de estructura de fichero:\n- scripts/controladorJuegos.js\n- scripts/juegos/snake.js\n- scripts/juegos/pong.js\n- scripts/ui/ranking.js" as N1
+
+note "Ejemplo mínimo de Controlador de Juegos:\niniciar(nombre) -> detiene el actual, inicializa nuevoJuego = require('juegos/'+nombre).init(canvas)\ndetener() -> llama a nuevoJuego.end() y limpia listeners" as N2
+
+@enduml

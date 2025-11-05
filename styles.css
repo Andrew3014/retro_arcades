@@ -1,0 +1,121 @@
+:root{
+  --bg:#0b0b17;
+  --neon-pink:#ff4da6;
+  --neon-cyan:#4de6ff;
+  --neon-green:#39ff14;
+  --panel:#0f1222;
+  --glass: rgba(255,255,255,0.04);
+  --accent: linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));
+}
+*{box-sizing:border-box}
+body{margin:0;font-family: 'Segoe UI', Roboto, Arial, sans-serif;background:radial-gradient(ellipse at top left,#071024 0,#03030a 60%),var(--bg);color:#e6eef8}
+.particle-canvas{position:fixed;right:0;left:0;top:0;bottom:0;z-index:0;pointer-events:none;opacity:0.35}
+.site-header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;border-bottom:1px solid rgba(255,255,255,0.03);background:rgba(0,0,0,0.35);backdrop-filter:blur(4px)}
+/* acciones del encabezado */
+.header-actions{margin-left:14px}
+.theme-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#dff6ff;padding:8px 10px;border-radius:8px;cursor:pointer}
+.theme-toggle:hover{filter:brightness(1.1)}
+.logo{font-weight:900;letter-spacing:2px;font-size:22px;color:var(--neon-pink)}
+.logo span{color:var(--neon-cyan);margin-left:6px}
+.main-nav a{color:#cfefff;margin-left:18px;text-decoration:none;font-weight:600}
+.container{max-width:1200px;margin:28px auto;padding:0 20px}
+.hero{padding:28px;background:linear-gradient(180deg,rgba(2,6,10,0.6),rgba(2,6,10,0.45));border-radius:8px;margin-bottom:18px;box-shadow:0 14px 40px rgba(0,0,0,0.6);}
+.hero h1{font-size:34px;margin:0 0 8px;color:#ffffff;text-shadow:0 0 20px rgba(255,77,166,0.22)}
+.hero p{margin:0;color:#d6eefb}
+.games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px}
+ .game-card{background:linear-gradient(180deg,rgba(6,12,18,0.62),rgba(6,10,14,0.55));padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 12px 34px rgba(0,0,0,0.6);} 
+/* mejoras visuales estilo Uiverse: brillo/neón, borde animado y elevación al pasar el ratón */
+.game-card{position:relative;overflow:hidden;transition:transform .22s cubic-bezier(.2,.9,.2,1),box-shadow .22s;}
+.game-card::before{content:'';position:absolute;inset:-2px;background:linear-gradient(120deg, rgba(255,77,166,0.08), rgba(77,230,255,0.08));filter:blur(10px);opacity:0.9;pointer-events:none;z-index:1}
+.game-card:hover{transform:translateY(-8px);box-shadow:0 30px 60px rgba(4,10,18,0.7)}
+.game-card > *{position:relative;z-index:2}
+.game-controls{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.play-btn{background:var(--neon-pink);color:#061019;border:none;padding:8px 12px;border-radius:6px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(255,77,166,0.08)}
+.play-btn:hover{transform:translateY(-2px)}
+.score{font-weight:700;color:var(--neon-cyan)}
+.game-card h2{margin:0 0 8px;color:#ffffff}
+/* Estructura de la tarjeta */
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:6px 2px;border-bottom:1px dashed rgba(255,255,255,0.03);margin-bottom:8px}
+.card-header::after{content:'';height:4px;width:120px;background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));border-radius:6px;opacity:.9;display:block;margin-left:12px}
+.card-body{padding:6px}
+.card-footer{display:flex;gap:12px;align-items:flex-start;flex-direction:column;margin-top:8px}
+.card-footer .info{max-height:160px;overflow:auto;padding-right:6px}
+
+/* Insignias */
+.badges{display:flex;gap:8px;align-items:center}
+.badge{font-size:11px;padding:4px 8px;border-radius:999px;font-weight:800;color:#04101a;background:linear-gradient(90deg,#6ff3ff,#ff7bb5);box-shadow:0 8px 26px rgba(0,0,0,0.18);transform:translateZ(0);}
+.badge.tech{background:linear-gradient(90deg,#4de6ff,#39ff14);color:#041017}
+.badge.era{background:linear-gradient(90deg,#ff4da6,#ffd24d);color:#041017}
+.badge.small{font-size:10px;padding:3px 6px}
+
+/* Estilo de botón tipo Uiverse */
+.play-btn{position:relative;overflow:hidden;padding:10px 16px;border-radius:12px;background:linear-gradient(90deg, rgba(255,77,166,0.95), rgba(77,230,255,0.95));color:#041016;text-shadow:0 1px 0 rgba(255,255,255,0.06);box-shadow:0 10px 30px rgba(77,230,255,0.06), inset 0 -3px 8px rgba(0,0,0,0.12);transition:transform .14s ease, filter .14s ease, box-shadow .18s}
+.play-btn::after{content:'';position:absolute;inset:0;border-radius:12px;box-shadow:0 6px 40px rgba(77,230,255,0.12);pointer-events:none;}
+.play-btn::before{content:'▶';display:inline-block;margin-right:8px;font-weight:900;color:rgba(4,16,22,0.9)}
+.play-btn:hover{box-shadow:0 18px 50px rgba(77,230,255,0.12);transform:translateY(-3px)}
+
+.stop-btn{margin-left:8px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.04);color:#fff;cursor:pointer;font-weight:700}
+.stop-btn:hover{filter:brightness(1.08)}
+
+/* animación sutil del gradiente del botón */
+@keyframes btnGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.play-btn{background-size:200% 200%;animation:btnGradient 6s ease infinite}
+.play-btn:active{transform:translateY(1px) scale(.995);filter:brightness(.95)}
+
+/* barra de desplazamiento estética para la sección de info */
+.card-footer .info::-webkit-scrollbar{width:8px}
+.card-footer .info::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#2a9fd1,#ff6fa0);border-radius:8px}
+.site-header, .container, .hero{position:relative;z-index:3}
+/* navegación: subrayado animado */
+.main-nav a{position:relative}
+.main-nav a::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));bottom:-6px;transform:scaleX(0);transform-origin:left center;transition:transform .22s}
+.main-nav a:hover::after{transform:scaleX(1)}
+canvas{display:block;width:100%;height:auto;background:linear-gradient(180deg,#031822,#021218);border:2px solid rgba(255,255,255,0.04);border-radius:6px}
+.info{margin-top:8px;font-size:14px;color:#f3fbff}
+.info h3{margin:8px 0 4px;color:#ff83c9;font-size:13px}
+.simon-board{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-width:260px;margin:8px auto}
+.simon-btn{width:120px;height:100px;border-radius:12px;border:4px solid rgba(0,0,0,0.6);box-shadow:0 8px 18px rgba(0,0,0,0.6);cursor:pointer}
+.about,.howto{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(6,12,18,0.58),rgba(6,12,18,0.38));border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 44px rgba(0,0,0,0.55);position:relative;overflow:hidden;transition:transform .22s,box-shadow .22s}
+.about:hover,.howto:hover{transform:translateY(-6px);box-shadow:0 30px 70px rgba(0,0,0,0.6)}
+.about h2,.howto h2{font-size:24px;margin:0 0 12px;color:#ffffff;text-shadow:0 0 18px rgba(77,230,255,0.08)}
+.about p,.howto p{color:#d6eefb;line-height:1.5}
+
+/* acento decorativo en la esquina superior izquierda */
+.about::before,.howto::before{content:'';position:absolute;left:18px;top:12px;width:140px;height:6px;background:linear-gradient(90deg,var(--neon-pink),var(--neon-cyan));border-radius:6px;opacity:0.95;transform:translateY(-6px)}
+
+/* borde interior tenue que aporta profundidad */
+.about::after,.howto::after{content:'';position:absolute;inset:0;border-radius:12px;padding:2px;pointer-events:none;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+
+/* ajustar el scrollbar dentro si hay overflow */
+.about::-webkit-scrollbar,.howto::-webkit-scrollbar{height:8px}
+.about::-webkit-scrollbar-thumb,.howto::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#2a9fd1,#ff6fa0);border-radius:8px}
+/* Footer eliminado: reglas removidas para evitar estilos huérfanos */
+
+/* Efecto de rejilla retro en el fondo */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(transparent 95%,rgba(77,77,77,0.06) 95%),linear-gradient(90deg,transparent 95%,rgba(77,77,77,0.06) 95%);background-size:100% 36px,36px 100%;pointer-events:none;opacity:0.03;z-index:1}
+
+/* Tema claro - aplicado cuando la clase .light está en el elemento html */
+:root.light{
+  --bg:#d7dce0;
+  --neon-pink:#ff6fb3;
+  --neon-cyan:#7fe9ff;
+}
+.light body{background:radial-gradient(ellipse at top left,#e6eef2 0,#d1d6d9 60%)}
+.light .site-header{background:rgba(255,255,255,0.6);border-color:rgba(0,0,0,0.06)}
+.light .game-card{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.85));box-shadow:0 10px 30px rgba(0,0,0,0.08);border-color:rgba(0,0,0,0.06)}
+.light .play-btn{color:#041016}
+.light .info{color:#22343a}
+
+/* pequeños ajustes responsivos */
+@media (max-width:420px){.simon-btn{width:100%;height:80px}.games-grid{grid-template-columns:1fr}}
+
+/* Estilos para la sección 'Origen' */
+.origen{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(8,14,20,0.62),rgba(6,10,14,0.45));border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 44px rgba(0,0,0,0.55);position:relative;overflow:hidden;transition:transform .22s,box-shadow .22s}
+.origen:hover{transform:translateY(-6px);box-shadow:0 30px 70px rgba(0,0,0,0.6)}
+.origen h2{font-size:22px;margin:0 0 12px;color:#fff;text-shadow:0 0 14px rgba(77,230,255,0.06)}
+.origen p{color:#d6eefb}
+.origen ul{margin:12px 0 0 18px;color:#d6eefb}
+.origen li{margin-bottom:8px}
+.origen a{color:var(--neon-cyan);font-weight:700;text-decoration:none}
+.origen a:hover{text-decoration:underline}
+
