@@ -61,34 +61,8 @@ Pull requests y mejoras son bienvenidas. Ideas prioritarias:
 - Separar juegos en módulos JS y añadir tests.
 - Mejoras en accesibilidad (roles ARIA, focus visible, navegación por teclado completa).
 
-## Publicar en GitHub (comandos de PowerShell)
 
-Si ya creaste el repositorio remoto `https://github.com/Andrew3014/retro_arcade.git`, aquí tienes los pasos para subir el contenido desde tu máquina:
 
-```powershell
-# inicializar (si no está inicializado)
-git init
-git add .
-git commit -m "Initial: Retro Arcade static site"
 
-# conectar el remoto y pushear a main
-git remote add origin https://github.com/Andrew3014/retro_arcade.git
-git branch -M main
-git push -u origin main
-```
 
-### Notas sobre autenticación
 
-- Si usas HTTPS, GitHub pedirá credenciales. Recomendado: usar un Personal Access Token (PAT) con permisos `repo` y usarlo como contraseña cuando Git lo solicite.
-- Alternativa (recomendada si trabajas frecuentemente): configurar SSH keys y usar la URL `git@github.com:Andrew3014/retro_arcade.git`.
-
-Si quieres que prepare un script `publish.ps1` que lea el token desde la variable de entorno `GH_TOKEN` y haga push automátizado, dímelo y lo agrego.
-
-## Licencia
-
-Proyecto educativo — libre para usar y modificar. Puedo añadir `LICENSE` (MIT) si quieres.
-
----
-
-Si quieres que haga el push desde este entorno (ejecutar los comandos aquí), confirma el método de autenticación (SSH configurado o quieres usar un PAT). Por seguridad no incluyas el token en el chat; si prefieres, ejecuto los comandos y te pido autorización previa antes de intentar cualquier push remoto.
-Si quieres que haga el push desde este entorno (ejecutar los comandos aquí), confirma el método de autenticación (SSH configurado o quieres usar un PAT). Por seguridad no incluyas el token en el chat; si prefieres, ejecuto los comandos y te pido autorización previa antes de intentar cualquier push remoto.
