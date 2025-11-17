@@ -21,13 +21,13 @@ const PIECES: Piece[] = [
 
 const COLORS = [
   '#000', 
-  '#00f0f0', // Cyan
-  '#f0f000', // Yellow
-  '#a000f0', // Purple
-  '#00f000', // Green
-  '#f00000', // Red
-  '#0000f0', // Blue
-  '#f0a000'  // Orange
+  '#00f0f0', // Cian
+  '#f0f000', // Amarillo
+  '#a000f0', // Morado
+  '#00f000', // Verde
+  '#f00000', // Rojo
+  '#0000f0', // Azul
+  '#f0a000'  // Naranja
 ];
 
 const GLOW_COLORS = [
@@ -153,14 +153,14 @@ export function TetrisGame({ onGameOver }: TetrisGameProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear canvas con gradiente oscuro
+    // Limpiar el canvas con un gradiente oscuro
     const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
     gradient.addColorStop(0, '#1a0a2e');
     gradient.addColorStop(1, '#0a0a1a');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // Draw board con efectos mejorados
+    // Dibujar el tablero con efectos mejorados
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
         if (board.current[row][col]) {
@@ -172,14 +172,14 @@ export function TetrisGame({ onGameOver }: TetrisGameProps) {
           ctx.fillStyle = color;
           ctx.fillRect(col * CELL_SIZE + 1, row * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
           
-          // Highlight effect
+          // Efecto de resaltado
           ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
           ctx.fillRect(col * CELL_SIZE + 2, row * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE / 2 - 2);
         }
       }
     }
 
-    // Draw current piece con efectos
+    // Dibujar la pieza actual con efectos
     const color = COLORS[currentPieceType.current];
     const glowColor = GLOW_COLORS[currentPieceType.current];
     ctx.fillStyle = color;
@@ -193,7 +193,7 @@ export function TetrisGame({ onGameOver }: TetrisGameProps) {
           const y = (pieceY.current + row) * CELL_SIZE;
           ctx.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
           
-          // Highlight
+          // Resaltado
           ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
           ctx.fillRect(x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE / 2 - 2);
           ctx.fillStyle = color;
@@ -202,7 +202,7 @@ export function TetrisGame({ onGameOver }: TetrisGameProps) {
     }
     ctx.shadowBlur = 0;
 
-    // Draw grid con glow sutil
+    // Dibujar la cuadrícula con brillo sutil
     ctx.strokeStyle = 'rgba(160, 0, 240, 0.15)';
     ctx.lineWidth = 1;
     for (let i = 0; i <= COLS; i++) {

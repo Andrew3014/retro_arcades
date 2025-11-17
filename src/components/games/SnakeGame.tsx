@@ -58,14 +58,14 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear canvas con gradiente
+    // Limpiar el canvas con un gradiente
     const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_SIZE);
     gradient.addColorStop(0, '#0a0a1a');
     gradient.addColorStop(1, '#1a1a35');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    // Draw grid con efecto glow
+    // Dibujar la cuadrícula con efecto de brillo
     ctx.strokeStyle = 'rgba(16, 185, 129, 0.1)';
     ctx.lineWidth = 1;
     for (let i = 0; i <= GRID_SIZE; i++) {
@@ -79,13 +79,13 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
       ctx.stroke();
     }
 
-    // Draw snake con efectos mejorados
+    // Dibujar la serpiente con efectos mejorados
     snake.current.forEach((segment, index) => {
       const x = segment.x * CELL_SIZE;
       const y = segment.y * CELL_SIZE;
       
       if (index === 0) {
-        // Cabeza con gradiente y glow
+        // Cabeza con gradiente y brillo
         const headGradient = ctx.createRadialGradient(
           x + CELL_SIZE / 2, y + CELL_SIZE / 2, 0,
           x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE / 2
@@ -107,7 +107,7 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
       
       ctx.fillRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
       
-      // Eyes for head con glow
+      // Ojos de la cabeza con brillo
       if (index === 0) {
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#fff';
@@ -129,11 +129,11 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
           eye1Y = y + 14; eye2Y = y + 14;
         }
         
-        // White eyes
+        // Ojos blancos
         ctx.fillRect(eye1X, eye1Y, eyeSize, eyeSize);
         ctx.fillRect(eye2X, eye2Y, eyeSize, eyeSize);
         
-        // Black pupils
+        // Pupilas negras
         ctx.fillStyle = '#000';
         ctx.fillRect(eye1X + 1, eye1Y + 1, pupilSize, pupilSize);
         ctx.fillRect(eye2X + 1, eye2Y + 1, pupilSize, pupilSize);
@@ -141,7 +141,7 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
     });
     ctx.shadowBlur = 0;
 
-    // Draw food con animación y glow
+    // Dibujar la comida con animación y brillo
     const foodX = food.current.x * CELL_SIZE;
     const foodY = food.current.y * CELL_SIZE;
     const pulse = Math.sin(Date.now() / 200) * 2 + 2;
@@ -185,13 +185,13 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
         break;
     }
 
-    // Check wall collision
+    // Verificar colisión con las paredes
     if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
       setGameOver(true);
       return false;
     }
 
-    // Check self collision
+    // Verificar colisión consigo misma
     if (snake.current.some(segment => segment.x === head.x && segment.y === head.y)) {
       setGameOver(true);
       return false;
@@ -199,7 +199,7 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
 
     snake.current.unshift(head);
 
-    // Check food collision
+    // Verificar colisión con la comida
     if (head.x === food.current.x && head.y === food.current.y) {
       setScore(prev => prev + 10);
       generateFood();

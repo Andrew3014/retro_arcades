@@ -18,22 +18,26 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
     password: '',
     confirmPassword: ''
   });
+  const [errorMsg, setErrorMsg] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setErrorMsg('');
+    if (submitting) return;
     // Validaciones básicas
     if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      setErrorMsg('Las contraseñas no coinciden');
       return;
     }
 
     if (!formData.email || !formData.password || (!isLogin && !formData.username)) {
-      alert('Por favor completa todos los campos');
+      setErrorMsg('Por favor completa todos los campos');
       return;
     }
 
     try {
+      setSubmitting(true);
       if (isLogin) {
         const { token, user } = await api.login({ email: formData.email, password: formData.password });
         localStorage.setItem('token', token);
@@ -45,8 +49,10 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
       }
       onClose();
     } catch (err: any) {
-      alert(err.message || 'Error de autenticación');
+      const msg = String(err?.message || 'Error de autenticación');
+      setErrorMsg(msg.includes('Credenciales inválidas') ? 'Correo o contraseña incorrectos.' : msg);
     }
+    finally { setSubmitting(false); }
   };
 
   return (
@@ -76,6 +82,18 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
             {isLogin ? 'Continúa tu partida' : 'Únete a la comunidad retro'}
           </p>
         </div>
+
+        {/* Error banner */}
+        {errorMsg && (
+          <div className="mx-6 mt-4 rounded border-2 border-pink-600/60 bg-gradient-to-r from-pink-900/60 to-red-900/50 text-pink-100 px-4 py-2 flex items-start gap-2" role="alert">
+            <span>⚠️</span>
+            <div className="flex-1">
+              <div className="font-semibold" style={{ fontFamily: 'monospace' }}>No pudimos autenticarte</div>
+              <div className="text-sm">{errorMsg}</div>
+            </div>
+            <button onClick={() => setErrorMsg('')} className="text-pink-200 hover:text-white">✕</button>
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -149,10 +167,11 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0"
+            disabled={submitting}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 disabled:opacity-60"
             style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }}
           >
-            {isLogin ? 'ENTRAR' : 'CREAR CUENTA'}
+            {submitting ? 'Procesando...' : isLogin ? 'ENTRAR' : 'CREAR CUENTA'}
           </Button>
 
           <div className="text-center">

@@ -25,7 +25,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
           api.rankings('pong').catch(() => []),
           api.rankings('tetris').catch(() => []),
         ]);
-        // Not used directly; we fetch rankingName through /me/scores?game, but we can get history now
+        // No se usa directamente; obtenemos el nombre de ranking vía /me/scores?game, pero aquí podemos cargar el historial
         const h = await api.myScores();
         setHistory(h);
       } catch {}

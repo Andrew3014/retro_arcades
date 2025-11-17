@@ -58,7 +58,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear canvas con gradiente
+    // Limpiar el canvas con un gradiente
     const gradient = ctx.createLinearGradient(0, 0, CANVAS_WIDTH, 0);
     gradient.addColorStop(0, '#1e3a8a');
     gradient.addColorStop(0.5, '#0a0a1a');
@@ -66,7 +66,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // Draw center line con glow
+    // Dibujar la línea central con efecto de brillo
     ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
     ctx.lineWidth = 3;
     ctx.setLineDash([15, 15]);
@@ -79,7 +79,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
     ctx.setLineDash([]);
     ctx.shadowBlur = 0;
 
-    // Draw paddle 1 con gradiente y glow
+    // Dibujar la paleta 1 con gradiente y brillo
     const paddle1Gradient = ctx.createLinearGradient(20, 0, 20 + PADDLE_WIDTH, 0);
     paddle1Gradient.addColorStop(0, '#60a5fa');
     paddle1Gradient.addColorStop(1, '#3b82f6');
@@ -88,7 +88,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
     ctx.shadowColor = '#3b82f6';
     ctx.fillRect(20, paddle1Y.current, PADDLE_WIDTH, PADDLE_HEIGHT);
 
-    // Draw paddle 2 con gradiente y glow
+    // Dibujar la paleta 2 con gradiente y brillo
     const paddle2Gradient = ctx.createLinearGradient(CANVAS_WIDTH - 20 - PADDLE_WIDTH, 0, CANVAS_WIDTH - 20, 0);
     paddle2Gradient.addColorStop(0, '#ef4444');
     paddle2Gradient.addColorStop(1, '#fca5a5');
@@ -97,7 +97,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
     ctx.shadowColor = '#ef4444';
     ctx.fillRect(CANVAS_WIDTH - 20 - PADDLE_WIDTH, paddle2Y.current, PADDLE_WIDTH, PADDLE_HEIGHT);
 
-    // Draw ball con glow y trail
+    // Dibujar la pelota con brillo y estela
     const ballGradient = ctx.createRadialGradient(
       ballX.current, ballY.current, 0,
       ballX.current, ballY.current, BALL_SIZE
@@ -113,7 +113,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Draw scores con glow
+    // Dibujar los marcadores con brillo
     ctx.font = 'bold 48px monospace';
     ctx.shadowBlur = 15;
     
@@ -129,7 +129,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
   }, [score]);
 
   const update = useCallback(() => {
-    // Move paddles
+    // Mover las paletas
     const paddleSpeed = 6;
     if (keys.current.has('w') && paddle1Y.current > 0) {
       paddle1Y.current -= paddleSpeed;
@@ -144,16 +144,16 @@ export function PongGame({ onGameOver }: PongGameProps) {
       paddle2Y.current += paddleSpeed;
     }
 
-    // Move ball
+    // Mover la pelota
     ballX.current += ballSpeedX.current;
     ballY.current += ballSpeedY.current;
 
-    // Ball collision with top/bottom
+    // Colisión de la pelota con techo o suelo
     if (ballY.current <= 0 || ballY.current >= CANVAS_HEIGHT) {
       ballSpeedY.current *= -1;
     }
 
-    // Ball collision with paddles
+    // Colisión de la pelota con las paletas
     if (
       ballX.current <= 30 + PADDLE_WIDTH &&
       ballY.current >= paddle1Y.current &&
@@ -172,7 +172,7 @@ export function PongGame({ onGameOver }: PongGameProps) {
       ballSpeedY.current += (Math.random() - 0.5) * 2;
     }
 
-    // Score points
+    // Sumar puntos
     if (ballX.current < 0) {
       setScore(prev => {
         const newScore = { ...prev, player2: prev.player2 + 1 };

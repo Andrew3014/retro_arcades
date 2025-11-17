@@ -13,6 +13,7 @@ export function AdminPage({ onBack }: AdminPageProps) {
   const [users, setUsers] = useState<any[]>([]);
   const [filterGame, setFilterGame] = useState<string>('');
   const [showDeleted, setShowDeleted] = useState<boolean>(false);
+  const [edits, setEdits] = useState<Record<number, { score?: number; rankingName?: string; dirty?: boolean; saving?: boolean }>>({});
 
   const load = async () => {
     try {
@@ -42,6 +43,29 @@ export function AdminPage({ onBack }: AdminPageProps) {
   const updateScore = async (id: number, score: number) => { await api.adminUpdateScore(id, score); load(); };
 
   const deleteScore = async (id: number) => { await api.adminDeleteScore(id); load(); };
+
+  const saveRow = async (s: any) => {
+    const e = edits[s.id] || {};
+    if (!e.dirty || e.saving) return;
+    setEdits(prev => ({ ...prev, [s.id]: { ...e, saving: true } }));
+    try {
+      const ops: Promise<any>[] = [];
+      const nextScore = (e.score ?? s.score);
+      const nextName = (e.rankingName ?? s.ranking_name ?? '');
+      if (nextScore !== s.score && Number.isInteger(nextScore as any) && (nextScore as any) >= 0) {
+        ops.push(api.adminUpdateScore(s.id, Number(nextScore)));
+      }
+      const trimmed = String(nextName).trim();
+      if ((trimmed || '') !== (s.ranking_name || '') && trimmed.length >= 3 && trimmed.length <= 30) {
+        ops.push(api.adminUpdateRankingName(s.user_id, s.game, trimmed));
+      }
+      if (ops.length > 0) await Promise.all(ops);
+      await load();
+      setEdits(prev => ({ ...prev, [s.id]: {} }));
+    } finally {
+      setEdits(prev => ({ ...prev, [s.id]: { ...prev[s.id], saving: false, dirty: false } }));
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
@@ -119,27 +143,27 @@ export function AdminPage({ onBack }: AdminPageProps) {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <input
                   type="number"
-                  defaultValue={s.score}
+                  value={ (edits[s.id]?.score ?? s.score) }
                   min={0}
                   className="w-24 bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-white"
-                  onBlur={(e) => {
+                  onChange={(e) => {
                     const val = parseInt(e.target.value || '0', 10);
-                    if (!Number.isNaN(val) && val >= 0 && val !== s.score) updateScore(s.id, val);
+                    setEdits(prev => ({ ...prev, [s.id]: { ...prev[s.id], score: val, dirty: true } }));
                   }}
                 />
                 <input
                   type="text"
-                  defaultValue={s.ranking_name || ''}
+                  value={ (edits[s.id]?.rankingName ?? (s.ranking_name || '')) }
                   placeholder="Ranking name"
                   className="w-32 bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-white"
-                  onBlur={(e) => {
-                    const val = e.target.value.trim();
-                    const original = s.ranking_name || '';
-                    if (val && val !== original && val.length>=3 && val.length<=30) {
-                      api.adminUpdateRankingName(s.user_id, s.game, val).then(load);
-                    }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setEdits(prev => ({ ...prev, [s.id]: { ...prev[s.id], rankingName: val, dirty: true } }));
                   }}
                 />
+                  <Button size="sm" className="bg-purple-700 hover:bg-purple-600 text-white" disabled={!edits[s.id]?.dirty || edits[s.id]?.saving} onClick={() => saveRow(s)}>
+                    {edits[s.id]?.saving ? 'Guardando...' : 'Guardar'}
+                  </Button>
                 <Button variant="outline" className="border-purple-500/50 text-purple-200" onClick={() => deleteScore(s.id)}>Eliminar</Button>
               </div>
             </div>
