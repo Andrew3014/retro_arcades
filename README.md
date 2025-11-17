@@ -1,68 +1,110 @@
-# Retro Arcade
 
-Retro Arcade es una landing demo con una colección de juegos clásicos implementados con HTML5, CSS3 y JavaScript (sin librerías externas). Está pensada como prototipo educativo para jugar, probar implementaciones sencillas y conocer una breve historia de cada juego.
+  # Retro Gaming Web App (Fullstack)
 
-## Objetivo
+  Aplicación para jugar títulos retro (Snake, Pong, Tetris), conocer su historia/creadores y competir en rankings globales con autenticación, comentarios públicos, reportes privados y panel de administración.
 
-- Jugar y probar versiones simples de juegos retro (Snake, Pong, Breakout, Flappy Bird y Simon).
-- Aprender patrones básicos de desarrollo de juegos en el navegador (bucles, entrada, colisiones, scoring).
-- Conocer brevemente el origen histórico de cada juego mientras se juega.
+  ## Descripción del sistema
 
-## Estructura del repositorio
+  - Módulo principal: gestión de puntajes (scores) por juego.
+    - Create (POST): registrar puntaje tras cada partida.
+    - Read (GET): consultar rankings globales y el historial de partidas.
+    - Update (PUT): editar nombre a mostrar en ranking por juego (perfil) y (admin) ajustar puntaje.
+    - Delete (DELETE): eliminación lógica de puntajes (admin).
+  - Autenticación JWT con roles (usuario/admin).
+  - Rankings por juego (mejor puntaje por usuario y posición) y récord personal con aviso si mejoras tu marca.
+  - Nombre de ranking por juego: el usuario lo define la primera vez y luego lo edita desde Perfil.
+  - Historial de partidas del usuario.
+  - Comentarios públicos por juego y reportes privados para el admin.
+  - Panel Admin: gestionar comentarios, reportes y puntajes.
 
-- `index.html` — Página principal con tarjetas por juego y controles (Jugar / Detener).
-- `styles.css` — Estilos, variables de tema, efectos neón y responsive.
-- `scripts.js` — Lógica del background (partículas), los 5 juegos y `GameController` (start/stop, bloqueo de scroll durante juegos).
+  ## Estructura
 
-## Cómo ejecutar localmente
+  - `src/` Frontend React + Vite.
+  - `server/` API Express + MySQL.
+    - `routes/`: `auth`, `games`, `me`, `admin`.
+    - `sql/schema.sql`: esquema y datos iniciales.
 
-La aplicación es estática. Lo ideal es servirla con un pequeño servidor local para evitar limitaciones de navegador.
+  ## Requisitos previos
 
-PowerShell (recomendado si tienes Python instalado):
+  - Node.js 18+
+  - MySQL Server y MySQL Workbench
 
-```powershell
-# desde la carpeta del proyecto
-python -m http.server 8000
-# abrir http://localhost:8000 en el navegador
-```
+  ## Configuración de la base de datos (MySQL Workbench)
 
-Alternativas:
-- Live Server (VSCode)
-- `serve` (Node): `npm i -g serve` y `serve . -l 8000`
+  1) Abrir MySQL Workbench y ejecutar el script:
 
-## Controles por juego
+     - Archivo: `server/sql/schema.sql`
+     - Esto creará la BD `retro_gaming`, tablas y seeds (3 juegos + registros mínimos).
+     - Nota: el usuario admin seeded tiene un hash dummy. Puedes crear un admin así:
 
-- Snake: Flechas o WASD
-- Pong: Paleta izquierda: W/S. Paleta derecha: 8 (o Numpad8) arriba y 2 (o Numpad2) abajo.
-- Breakout: Flechas izquierda/derecha
-- Flappy Bird: Clic o Barra Espaciadora
-- Simon: Clic en los botones de color
+     a. Registra un usuario via API (o `AuthModal`).
 
-## Comportamiento de la UI
+     b. Promuévelo a admin con SQL:
 
-- Mientras un juego está activo el scroll de la página queda desactivado para evitar que las teclas de control (flechas/espacio) desplacen el viewport.
-- Cada tarjeta incluye botones "Jugar" y "Detener". Solo un juego puede estar activo a la vez (`GameController`).
+     ```sql
+     USE retro_gaming;
+     UPDATE users SET role = 'admin' WHERE email = 'tu_correo@dominio.com';
+     ```
 
-## Desarrollo y estructura de código
+  2) Crea el archivo `server/.env` copiando desde `.env.example` y ajusta credenciales:
 
-- `scripts.js` contiene: inicialización de partículas, funciones `initSnake()`, `initPong()`, `initBreakout()`, `initFlappy()`, `initSimon()` y el `GameController` que expone `window.GameController.start(name)` / `.stop(name)`.
-- Los init actuales exponen stops globales (`window.__<game>_stop`) y algunos exponen start (`window.__<game>_start`). El controlador maneja un fallback al dispatcher global `startGame(name)` si es necesario.
+  ```
+  PORT=4000
+  JWT_SECRET=pon_un_secreto_largo
+  DB_HOST=localhost
+  DB_PORT=3306
+  DB_USER=root
+  DB_PASSWORD=tu_password
+  DB_NAME=retro_gaming
+  CORS_ORIGIN=http://localhost:5173
+  ```
 
-## Diagnóstico rápido
+  ## Instalación y ejecución
 
-1. Si un juego no inicia: abre la consola del navegador (F12) y revisa errores JS.
-2. Si algo responde lentamente: revisa el uso de CPU (partículas o intervalos frecuentes).
-3. Si las teclas mueven la página: asegúrate de que el juego está activo (el bloqueo de scroll solo se aplica mientras un juego está activo).
+  Instala dependencias:
 
-## Contribuir
+  ```
+  npm install
+  ```
 
-Pull requests y mejoras son bienvenidas. Ideas prioritarias:
-- Guardado local de leaderboards y perfiles (localStorage).
-- Separar juegos en módulos JS y añadir tests.
-- Mejoras en accesibilidad (roles ARIA, focus visible, navegación por teclado completa).
+  Arranca la API (puerto 4000 por defecto):
 
+  ```
+  npm run server:dev
+  ```
 
+  Arranca el frontend (Vite en 5173):
 
+  ```
+  npm run dev
+  ```
 
+  Asegúrate de exponer en el frontend la URL de la API (opcional si usas localhost):
 
+  ```
+  VITE_API_URL=http://localhost:4000
+  ```
 
+  ## Endpoints principales (resumen)
+
+  - Auth: `POST /auth/register`, `POST /auth/login`.
+  - Juegos: `GET /games`, `GET /games/:slug`, `GET /games/:slug/rankings`, `POST /games/:slug/scores`.
+  - Perfil: `GET /me`, `GET /me/scores`, `PUT /me/ranking-name`.
+  - Comentarios: `GET /games/:slug/comments`, `POST /games/:slug/comments`.
+  - Reportes: `POST /games/:slug/reports`.
+  - Admin: `GET /admin/overview`, `GET /admin/comments`, `DELETE /admin/comments/:id`, `GET /admin/reports`, `PUT /admin/reports/:id`, `GET /admin/scores`, `PUT /admin/scores/:id`, `DELETE /admin/scores/:id`.
+
+  Validación de datos en backend con Zod y SQL parametrizado (mysql2/promise).
+
+  ## Registro de 5+ inserciones exitosas
+
+  - Seeds crean 3 juegos y puntajes iniciales. Puedes registrar usuarios nuevos (registrando 2+ usuarios y enviando sus puntajes desde la UI) para superar 5 inserciones.
+
+  ## Notas de integración UI
+
+  - `AuthModal` ya usa la API para registro/login y guarda JWT en `localStorage`.
+  - `GamePage` ahora envía puntajes a la API, muestra ranking global y permite comentar/reportar.
+  - `RankingsPage` consulta rankings desde la API.
+  - `ProfilePage` permite editar el nombre de ranking por juego y ver historial.
+  - `AdminPage` modera comentarios/reportes y gestiona puntajes.
+  

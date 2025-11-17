@@ -1,42 +1,45 @@
-# Node / JS
+# Dependencies
 node_modules/
+
+# Builds
+.dist/
+dist/
+.vite/
+
+# Local env
+.env
+.env.*
+!*.example
+server/.env
+server/.env.*
+!server/.env.example
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Logs
-logs
+logs/
 *.log
 
-# System
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS
 .DS_Store
 Thumbs.db
 
-# Editor
-.vscode/
-.idea/
+# Runtime caches
+.cache/
+.eslintcache
 
-# OS
-desktop.ini
+# Tests coverage
+coverage/
 
-# Python
-__pycache__/
-*.pyc
-
-# Environment
-.env
-.env.local
-
-# Build/dist
-dist/
-build/
+# Captures and media
+capturas/
+**/capturas/
 
 # Misc
-coverage/
-.cache/
-
-# Local config
-local.settings.json
-
-# Optional: ignore assets if large
-# assets/sounds/
+*.local
+*.pid

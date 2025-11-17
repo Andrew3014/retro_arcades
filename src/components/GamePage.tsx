@@ -1,0 +1,318 @@
+import { ArrowLeft, Trophy, Info, Gamepad } from 'lucide-react';
+import { SnakeGame } from './games/SnakeGame';
+import { PongGame } from './games/PongGame';
+import { TetrisGame } from './games/TetrisGame';
+import { Page, User } from '../App';
+import { useState, useEffect } from 'react';
+import { api } from '../lib/api';
+import { RankingNameModal } from './RankingNameModal';
+
+interface GamePageProps {
+  game: 'snake' | 'pong' | 'tetris';
+  onBack: () => void;
+  user: User | null;
+}
+
+interface GameInfo {
+  title: string;
+  year: string;
+  history: string;
+  controls: string[];
+  rules: string[];
+}
+
+const gameInfo: Record<string, GameInfo> = {
+  snake: {
+    title: 'Snake',
+    year: '1976',
+    history: 'Snake fue creado originalmente como un concepto en 1976 por Gremlin Industries bajo el nombre "Blockade". Ganó popularidad masiva cuando Nokia lo incluyó en sus teléfonos móviles en 1998. El jugador controla una serpiente que crece al comer objetos, y el desafío es evitar chocar con las paredes o con el propio cuerpo de la serpiente.',
+    controls: ['↑ ↓ ← → - Mover la serpiente', 'Espacio - Pausar/Reanudar'],
+    rules: ['Come la comida para crecer y ganar puntos', 'No choques con las paredes', 'No choques con tu propio cuerpo', 'Cada comida suma 10 puntos', 'La velocidad aumenta gradualmente']
+  },
+  pong: {
+    title: 'Pong',
+    year: '1972',
+    history: 'Pong fue desarrollado por Atari en 1972 y es considerado uno de los primeros videojuegos comercialmente exitosos. Fue diseñado por Allan Alcorn como un ejercicio de entrenamiento, pero su simplicidad y jugabilidad adictiva lo convirtieron en un fenómeno arcade. Pong simulaba tenis de mesa en 2D y estableció las bases de la industria de los videojuegos.',
+    controls: ['W / S - Mover paleta izquierda', '↑ / ↓ - Mover paleta derecha', 'Espacio - Iniciar/Pausar'],
+    rules: ['Impide que la pelota pase tu paleta', 'Primer jugador en llegar a 11 puntos gana', 'La pelota acelera con cada rebote', 'Cada punto aumenta la dificultad', 'El ángulo de rebote depende de dónde golpees']
+  },
+  tetris: {
+    title: 'Tetris',
+    year: '1984',
+    history: 'Tetris fue creado por Alexey Pajitnov en 1984 en la Unión Soviética. Es uno de los videojuegos más vendidos de la historia. El concepto simple pero adictivo de apilar bloques para formar líneas completas ha cautivado a generaciones. El juego ha sido adaptado a prácticamente todas las plataformas de videojuegos existentes y es considerado un clásico atemporal.',
+    controls: ['← → - Mover pieza', '↓ - Caída rápida', '↑ - Rotar pieza', 'Espacio - Caída instantánea'],
+    rules: ['Completa líneas horizontales para eliminarlas', 'Apila las piezas estratégicamente', 'El juego termina si las piezas llegan arriba', 'Más líneas simultáneas = más puntos', 'La velocidad aumenta con el nivel']
+  }
+};
+
+export function GamePage({ game, onBack, user }: GamePageProps) {
+  const info = gameInfo[game];
+  const [scores, setScores] = useState<Array<{ name: string; score: number; date: string }>>([]);
+  const [newRecord, setNewRecord] = useState<boolean>(false);
+  const [comment, setComment] = useState('');
+  const [report, setReport] = useState('');
+  const [meta, setMeta] = useState<any>(null);
+  const [myInfo, setMyInfo] = useState<{ best: number; rank: number | null; rankingName: string | null } | null>(null);
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [pendingScore, setPendingScore] = useState<number | null>(null);
+  
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await api.rankings(game, 50);
+        setScores(data);
+        const g = await api.game(game);
+        setMeta(g);
+        try {
+          const me = await api.meGame(game);
+          if (me) setMyInfo(me);
+        } catch {}
+      } catch (e) {
+        // fallback vacío
+        setScores([]);
+      }
+    };
+    load();
+  }, [game]);
+
+  const submitAndRefresh = async (finalScore: number, rankingName?: string) => {
+    const res = await api.submitScore(game, finalScore, rankingName);
+    setNewRecord(!!res.newRecord);
+    const data = await api.rankings(game, 50);
+    setScores(data);
+    try {
+      const me = await api.meGame(game);
+      if (me) setMyInfo(me);
+    } catch {}
+    if (res.newRecord) setTimeout(() => setNewRecord(false), 4000);
+  };
+
+  const handleGameOver = async (score: number) => {
+    // No guardamos puntajes cero o negativos
+    if (score <= 0) return;
+    if (!user) {
+      alert('Debes iniciar sesión para guardar tu puntaje y aparecer en el ranking.');
+      return;
+    }
+    try {
+      // Si el usuario no tiene nombre de ranking aún, abrir modal estilado
+      if (!myInfo || myInfo.rankingName == null) {
+        setPendingScore(score);
+        setShowNameModal(true);
+        return;
+      }
+      await submitAndRefresh(score);
+    } catch (err: any) {
+      alert(err.message || 'No se pudo guardar el puntaje');
+    }
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-purple-300 hover:text-purple-100 mb-4 sm:mb-6 transition-colors"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <span className="text-sm sm:text-base">Volver a inicio</span>
+      </button>
+
+      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* Game Canvas */}
+        <div className="lg:col-span-2">
+          <div className="bg-black/50 border-2 sm:border-4 border-purple-500 rounded-lg p-3 sm:p-4" style={{
+            boxShadow: '0 0 30px rgba(168, 85, 247, 0.5)'
+          }}>
+            <div className="flex items-center justify-between mb-3 sm:mb-4 flex-wrap gap-2">
+              <h2 className="text-white text-lg sm:text-xl md:text-2xl" style={{
+                textShadow: '0 0 10px rgba(168, 85, 247, 0.8)',
+                fontFamily: 'monospace'
+              }}>
+                {info.title}
+              </h2>
+              <span className="px-2 sm:px-3 py-1 bg-purple-600/50 text-purple-200 rounded text-sm" style={{
+                fontFamily: 'monospace'
+              }}>
+                EST. {info.year}
+              </span>
+            </div>
+            
+            {game === 'snake' && <SnakeGame onGameOver={handleGameOver} />}
+            {game === 'pong' && <PongGame onGameOver={handleGameOver} />}
+            {game === 'tetris' && <TetrisGame onGameOver={handleGameOver} />}
+          </div>
+        </div>
+
+        {/* Info Sidebar */}
+        <div className="space-y-4 sm:space-y-6">
+          {/* History */}
+          <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-2 sm:mb-3">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+              <h3 className="text-purple-300 text-sm sm:text-base">Historia</h3>
+            </div>
+            <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
+              {info.history}
+            </p>
+            {meta && (
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="text-center">
+                  <div className="text-purple-200 text-xs mb-1">Creador</div>
+                  {meta.creator_photo_url && (
+                    <img src={meta.creator_photo_url} alt={meta.creator_name} className="w-full h-24 object-cover rounded" />
+                  )}
+                  <div className="text-gray-300 text-xs mt-1">{meta.creator_name}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-purple-200 text-xs mb-1">Empresa</div>
+                  {meta.company_photo_url && (
+                    <img src={meta.company_photo_url} alt={meta.company_name} className="w-full h-24 object-cover rounded" />
+                  )}
+                  <div className="text-gray-300 text-xs mt-1">{meta.company_name}</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Controls */}
+          <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-2 sm:mb-3">
+              <Gamepad className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+              <h3 className="text-purple-300 text-sm sm:text-base">Controles</h3>
+            </div>
+            <ul className="space-y-1.5 sm:space-y-2">
+              {info.controls.map((control, index) => (
+                <li key={index} className="text-gray-300 text-xs sm:text-sm flex items-start gap-2">
+                  <span className="text-purple-400 mt-0.5">▸</span>
+                  <span style={{ fontFamily: 'monospace' }}>{control}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Rules */}
+          <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-2 sm:mb-3">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+              <h3 className="text-purple-300 text-sm sm:text-base">Reglas</h3>
+            </div>
+            <ul className="space-y-1.5 sm:space-y-2">
+              {info.rules.map((rule, index) => (
+                <li key={index} className="text-gray-300 text-xs sm:text-sm flex items-start gap-2">
+                  <span className="text-purple-400">•</span>
+                  <span>{rule}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Ranking */}
+          <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-2 sm:mb-3">
+              <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
+              <h3 className="text-purple-300 text-sm sm:text-base">Ranking Global</h3>
+            </div>
+            {scores.length > 0 ? (
+              <div className="space-y-1.5 sm:space-y-2">
+                {scores.slice(0, 5).map((score, index) => (
+                  <div key={index} className="flex items-center justify-between text-xs sm:text-sm bg-purple-900/20 rounded p-1.5 sm:p-2">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                      <span className={`flex-shrink-0 ${
+                        index === 0 ? 'text-yellow-400' : 
+                        index === 1 ? 'text-gray-300' : 
+                        index === 2 ? 'text-orange-400' : 
+                        'text-purple-400'
+                      }`} style={{ fontFamily: 'monospace' }}>
+                        #{index + 1}
+                      </span>
+                      <span className="text-white truncate">{score.name}</span>
+                    </div>
+                    <span className="text-purple-300 flex-shrink-0 ml-2" style={{ fontFamily: 'monospace' }}>
+                      {score.score}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-xs sm:text-sm text-center py-4">
+                ¡Sé el primero en establecer un récord!
+              </p>
+            )}
+            {newRecord && (
+              <div className="mt-3 text-center text-green-300" style={{ fontFamily: 'monospace' }}>
+                ¡Nuevo récord personal! 🎉
+              </div>
+            )}
+            {myInfo && (
+              <div className="mt-3 text-center text-purple-200 text-xs">
+                Tu récord: <span className="text-white">{myInfo.best || 0}</span> {myInfo.rank ? `• Posición: #${myInfo.rank}` : ''}
+              </div>
+            )}
+            {/* Comment box */}
+            <div className="mt-4 space-y-2">
+              <input
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Escribe un comentario público"
+                className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white"
+              />
+              <button
+                className="w-full bg-purple-700 hover:bg-purple-600 text-white rounded py-2"
+                onClick={async () => {
+                  if (!user) { alert('Inicia sesión para comentar'); return; }
+                  if (!comment.trim()) return;
+                  try { await api.addComment(game, comment.trim()); setComment(''); alert('Comentario publicado'); } catch (e: any) { alert(e.message || 'Error'); }
+                }}
+              >
+                Publicar comentario
+              </button>
+            </div>
+            {/* Report box */}
+            <div className="mt-3 space-y-2">
+              <input
+                value={report}
+                onChange={(e) => setReport(e.target.value)}
+                placeholder="Reportar un error al admin (privado)"
+                className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white"
+              />
+              <button
+                className="w-full bg-pink-700 hover:bg-pink-600 text-white rounded py-2"
+                onClick={async () => {
+                  if (!user) { alert('Inicia sesión para reportar'); return; }
+                  if (!report.trim()) return;
+                  try { await api.report(game, report.trim()); setReport(''); alert('Reporte enviado'); } catch (e: any) { alert(e.message || 'Error'); }
+                }}
+              >
+                Enviar reporte
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {user && (
+        <RankingNameModal
+          open={showNameModal}
+          defaultName={user.username || 'Jugador'}
+          onConfirm={async (name: string) => {
+            setShowNameModal(false);
+            const s = pendingScore;
+            setPendingScore(null);
+            if (s != null) {
+              try { await submitAndRefresh(s, name); } catch (e: any) { alert(e.message || 'No se pudo guardar el puntaje'); }
+            }
+          }}
+          onCancel={async () => {
+            setShowNameModal(false);
+            const s = pendingScore;
+            setPendingScore(null);
+            if (s != null) {
+              // Si cancela, guardamos usando el nombre por defecto (username)
+              try { await submitAndRefresh(s); } catch (e: any) { alert(e.message || 'No se pudo guardar el puntaje'); }
+            }
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
