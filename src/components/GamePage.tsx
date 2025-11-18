@@ -1,4 +1,4 @@
-import { ArrowLeft, Trophy, Info, Gamepad } from 'lucide-react';
+import { ArrowLeft, Trophy, Info, Gamepad, Check, AlertCircle, MessageCircle, Flag } from 'lucide-react';
 import { SnakeGame } from './games/SnakeGame';
 import { PongGame } from './games/PongGame';
 import { TetrisGame } from './games/TetrisGame';
@@ -6,6 +6,8 @@ import { Page, User } from '../App';
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { RankingNameModal } from './RankingNameModal';
+
+interface Toast { id: number; message: string; type: 'success' | 'error'; }
 
 interface GamePageProps {
   game: 'snake' | 'pong' | 'tetris';
@@ -55,6 +57,14 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
   const [myInfo, setMyInfo] = useState<{ best: number; rank: number | null; rankingName: string | null } | null>(null);
   const [showNameModal, setShowNameModal] = useState(false);
   const [pendingScore, setPendingScore] = useState<number | null>(null);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [submitting, setSubmitting] = useState<Record<string, boolean>>({ comment: false, report: false });
+
+  const addToast = (message: string, type: 'success' | 'error' = 'success') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
+  };
   
   useEffect(() => {
     const load = async () => {
@@ -91,7 +101,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
     // No guardamos puntajes cero o negativos
     if (score <= 0) return;
     if (!user) {
-      alert('Debes iniciar sesión para guardar tu puntaje y aparecer en el ranking.');
+      addToast('Debes iniciar sesión para guardar tu puntaje', 'error');
       return;
     }
     try {
@@ -103,12 +113,68 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
       }
       await submitAndRefresh(score);
     } catch (err: any) {
-      alert(err.message || 'No se pudo guardar el puntaje');
+      addToast(err.message || 'No se pudo guardar el puntaje', 'error');
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!user) {
+      addToast('Inicia sesión para comentar', 'error');
+      return;
+    }
+    if (!comment.trim()) {
+      addToast('El comentario no puede estar vacío', 'error');
+      return;
+    }
+    setSubmitting(prev => ({ ...prev, comment: true }));
+    try {
+      await api.addComment(game, comment.trim());
+      setComment('');
+      addToast('Comentario publicado exitosamente');
+    } catch (e: any) {
+      addToast(e.message || 'Error al publicar comentario', 'error');
+    } finally {
+      setSubmitting(prev => ({ ...prev, comment: false }));
+    }
+  };
+
+  const handleReportSubmit = async () => {
+    if (!user) {
+      addToast('Inicia sesión para reportar', 'error');
+      return;
+    }
+    if (!report.trim()) {
+      addToast('El reporte no puede estar vacío', 'error');
+      return;
+    }
+    setSubmitting(prev => ({ ...prev, report: true }));
+    try {
+      await api.report(game, report.trim());
+      setReport('');
+      addToast('Reporte enviado al administrador');
+    } catch (e: any) {
+      addToast(e.message || 'Error al enviar reporte', 'error');
+    } finally {
+      setSubmitting(prev => ({ ...prev, report: false }));
     }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      {/* Toasts */}
+      <div className="fixed top-4 right-4 z-50 space-y-2">
+        {toasts.map(t => (
+          <div key={t.id} className={`flex items-center gap-2 px-4 py-3 rounded border ${
+            t.type === 'success' 
+              ? 'bg-green-900/80 border-green-500/60 text-green-100'
+              : 'bg-red-900/80 border-red-500/60 text-red-100'
+          }`}>
+            {t.type === 'success' ? <Check className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
+            <span>{t.message}</span>
+          </div>
+        ))}
+      </div>
+
       <button
         onClick={onBack}
         className="flex items-center gap-2 text-purple-300 hover:text-purple-100 mb-4 sm:mb-6 transition-colors"
@@ -250,40 +316,46 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
             )}
             {/* Comment box */}
             <div className="mt-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-3 h-3 text-blue-400" />
+                <label className="text-purple-300 text-xs font-semibold">Comentario público</label>
+              </div>
               <input
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Escribe un comentario público"
-                className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white"
+                placeholder="Escribe un comentario..."
+                maxLength={500}
+                disabled={submitting.comment}
+                className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white text-sm disabled:opacity-50"
               />
               <button
-                className="w-full bg-purple-700 hover:bg-purple-600 text-white rounded py-2"
-                onClick={async () => {
-                  if (!user) { alert('Inicia sesión para comentar'); return; }
-                  if (!comment.trim()) return;
-                  try { await api.addComment(game, comment.trim()); setComment(''); alert('Comentario publicado'); } catch (e: any) { alert(e.message || 'Error'); }
-                }}
+                className="w-full bg-blue-700 hover:bg-blue-600 disabled:opacity-50 text-white rounded py-2 text-sm transition-colors"
+                onClick={handleCommentSubmit}
+                disabled={submitting.comment || !comment.trim()}
               >
-                Publicar comentario
+                {submitting.comment ? 'Publicando...' : 'Publicar comentario'}
               </button>
             </div>
             {/* Report box */}
             <div className="mt-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <Flag className="w-3 h-3 text-pink-400" />
+                <label className="text-purple-300 text-xs font-semibold">Reporte privado</label>
+              </div>
               <input
                 value={report}
                 onChange={(e) => setReport(e.target.value)}
-                placeholder="Reportar un error al admin (privado)"
-                className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white"
+                placeholder="Reportar un error al admin..."
+                maxLength={500}
+                disabled={submitting.report}
+                className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white text-sm disabled:opacity-50"
               />
               <button
-                className="w-full bg-pink-700 hover:bg-pink-600 text-white rounded py-2"
-                onClick={async () => {
-                  if (!user) { alert('Inicia sesión para reportar'); return; }
-                  if (!report.trim()) return;
-                  try { await api.report(game, report.trim()); setReport(''); alert('Reporte enviado'); } catch (e: any) { alert(e.message || 'Error'); }
-                }}
+                className="w-full bg-pink-700 hover:bg-pink-600 disabled:opacity-50 text-white rounded py-2 text-sm transition-colors"
+                onClick={handleReportSubmit}
+                disabled={submitting.report || !report.trim()}
               >
-                Enviar reporte
+                {submitting.report ? 'Enviando...' : 'Enviar reporte'}
               </button>
             </div>
           </div>
@@ -298,7 +370,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
             const s = pendingScore;
             setPendingScore(null);
             if (s != null) {
-              try { await submitAndRefresh(s, name); } catch (e: any) { alert(e.message || 'No se pudo guardar el puntaje'); }
+              try { await submitAndRefresh(s, name); } catch (e: any) { addToast(e.message || 'No se pudo guardar el puntaje', 'error'); }
             }
           }}
           onCancel={async () => {
@@ -307,7 +379,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
             setPendingScore(null);
             if (s != null) {
               // Si cancela, guardamos usando el nombre por defecto (username)
-              try { await submitAndRefresh(s); } catch (e: any) { alert(e.message || 'No se pudo guardar el puntaje'); }
+              try { await submitAndRefresh(s); } catch (e: any) { addToast(e.message || 'No se pudo guardar el puntaje', 'error'); }
             }
           }}
         />
