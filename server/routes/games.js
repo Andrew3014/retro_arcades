@@ -141,4 +141,16 @@ router.post('/:slug/reports', authRequired, async (req, res) => {
   res.json({ ok: true });
 });
 
+// Obtener reportes del usuario actual
+router.get('/my-reports/:slug', authRequired, async (req, res) => {
+  const [gameRows] = await pool.query('SELECT id FROM games WHERE slug = ?', [req.params.slug]);
+  if (gameRows.length === 0) return res.status(404).json({ error: 'Juego no encontrado' });
+  const gameId = gameRows[0].id;
+  const [reports] = await pool.query(
+    'SELECT id, content, status, created_at FROM reports WHERE user_id = ? AND game_id = ? ORDER BY created_at DESC',
+    [req.user.id, gameId]
+  );
+  res.json(reports);
+});
+
 module.exports = router;

@@ -39,6 +39,7 @@ export const api = {
   getComments: (slug: string) => http(`/games/${slug}/comments`),
   addComment: (slug: string, content: string) => http(`/games/${slug}/comments`, { method: 'POST', body: JSON.stringify({ content }) }),
   report: (slug: string, content: string) => http(`/games/${slug}/reports`, { method: 'POST', body: JSON.stringify({ content }) }),
+  myReports: (slug: string) => http(`/games/${slug}/my-reports`),
   // Admin
   adminOverview: () => http('/admin/overview'),
   adminComments: () => http('/admin/comments'),

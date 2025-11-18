@@ -59,6 +59,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
   const [pendingScore, setPendingScore] = useState<number | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({ comment: false, report: false });
+  const [userReports, setUserReports] = useState<Array<{ id: number; content: string; status: string; created_at: string }>>([]);
 
   const addToast = (message: string, type: 'success' | 'error' = 'success') => {
     const id = Date.now();
@@ -83,13 +84,23 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
           console.warn('Error cargando info personal:', e);
           setMyInfo(null);
         }
+        // Cargar reportes del usuario
+        if (user) {
+          try {
+            const reports = await api.myReports(game);
+            setUserReports(reports);
+          } catch (e) {
+            console.warn('Error cargando reportes del usuario:', e);
+            setUserReports([]);
+          }
+        }
       } catch (e) {
         console.warn('Error cargando datos del juego:', e);
         setScores([]);
       }
     };
     load();
-  }, [game]);
+  }, [game, user]);
 
   const submitAndRefresh = async (finalScore: number, rankingName?: string) => {
     const res = await api.submitScore(game, finalScore, rankingName);
@@ -162,6 +173,9 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
       await api.report(game, report.trim());
       setReport('');
       addToast('Reporte enviado al administrador');
+      // Recargar reportes del usuario
+      const reports = await api.myReports(game);
+      setUserReports(reports);
     } catch (e: any) {
       addToast(e.message || 'Error al enviar reporte', 'error');
     } finally {
@@ -367,6 +381,32 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
               >
                 {submitting.report ? 'Enviando...' : 'Enviar reporte'}
               </button>
+              {/* Mis reportes */}
+              {userReports.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-purple-500/30">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Flag className="w-3 h-3 text-pink-300" />
+                    <label className="text-purple-300 text-xs font-semibold">Mis reportes</label>
+                  </div>
+                  <div className="space-y-2">
+                    {userReports.map((r) => (
+                      <div key={r.id} className="bg-black/30 border border-pink-500/20 rounded p-2 text-xs">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-gray-300 line-clamp-2">{r.content}</span>
+                          <span className={`text-xs px-2 py-0.5 rounded font-semibold flex-shrink-0 ml-2 ${
+                            r.status === 'open' ? 'bg-yellow-900/50 text-yellow-200' :
+                            r.status === 'reviewed' ? 'bg-blue-900/50 text-blue-200' :
+                            'bg-green-900/50 text-green-200'
+                          }`}>
+                            {r.status === 'open' ? 'ABIERTO' : r.status === 'reviewed' ? 'REVISADO' : 'ARREGLADO'}
+                          </span>
+                        </div>
+                        <div className="text-gray-500 text-xs">{new Date(r.created_at).toLocaleString()}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

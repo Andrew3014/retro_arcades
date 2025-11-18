@@ -63,7 +63,7 @@ export function AdminPage({ onBack }: AdminPageProps) {
     setLoading(prev => ({ ...prev, [id]: true }));
     try {
       await api.adminUpdateReport(id, status);
-      const statusLabel = status === 'reviewed' ? 'revisado' : 'cerrado';
+      const statusLabel = status === 'reviewed' ? 'revisado' : 'arreglado';
       addToast(`Reporte marcado como ${statusLabel}`);
       await load();
     } catch (e: any) {
@@ -191,7 +191,7 @@ export function AdminPage({ onBack }: AdminPageProps) {
                       r.status === 'reviewed' ? 'bg-blue-900/50 text-blue-200' :
                       'bg-green-900/50 text-green-200'
                     }`}>
-                      {r.status.toUpperCase()}
+                      {r.status === 'open' ? 'ABIERTO' : r.status === 'reviewed' ? 'REVISADO' : 'ARREGLADO'}
                     </span>
                   </div>
                   <div className="text-gray-300 text-sm mb-3 break-words">{r.content}</div>
@@ -206,11 +206,11 @@ export function AdminPage({ onBack }: AdminPageProps) {
                     </Button>
                     <Button 
                       size="sm" 
-                      disabled={loading[r.id] || r.status === 'closed'}
+                      disabled={loading[r.id] || r.status === 'fixed'}
                       className="bg-green-700 hover:bg-green-600 disabled:opacity-50"
-                      onClick={() => setReportStatus(r.id, 'closed')}
+                      onClick={() => setReportStatus(r.id, 'fixed')}
                     >
-                      {loading[r.id] ? 'Procesando...' : 'Cerrar'}
+                      {loading[r.id] ? 'Procesando...' : 'Marcar arreglado'}
                     </Button>
                   </div>
                 </div>

@@ -37,7 +37,7 @@ router.get('/reports', requireRole('admin'), async (_req, res) => {
 });
 
 router.put('/reports/:id', requireRole('admin'), async (req, res) => {
-  const status = ['open', 'reviewed', 'closed'].includes(req.body.status) ? req.body.status : 'reviewed';
+  const status = ['open', 'reviewed', 'fixed'].includes(req.body.status) ? req.body.status : 'reviewed';
   await pool.query('UPDATE reports SET status = ? WHERE id = ?', [status, req.params.id]);
   res.json({ ok: true });
 });
