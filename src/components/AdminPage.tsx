@@ -73,6 +73,20 @@ export function AdminPage({ onBack }: AdminPageProps) {
     }
   };
 
+  const deleteReport = async (id: number) => {
+    if (!window.confirm('¿Eliminar este reporte?')) return;
+    setLoading(prev => ({ ...prev, [id]: true }));
+    try {
+      await api.adminDeleteReport(id);
+      addToast('Reporte eliminado');
+      await load();
+    } catch (e: any) {
+      addToast(e.message || 'Error al eliminar', 'error');
+    } finally {
+      setLoading(prev => ({ ...prev, [id]: false }));
+    }
+  };
+
   const deleteScore = async (id: number) => {
     if (!window.confirm('¿Eliminar este puntaje?')) return;
     setLoading(prev => ({ ...prev, [id]: true }));
@@ -117,7 +131,7 @@ export function AdminPage({ onBack }: AdminPageProps) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      <button onClick={onBack} className="flex items-center gap-2 text-purple-300 hover:text-purple-100 mb-6 transition-colors">
+      <button onClick={onBack} className="flex items-center gap-2 text-purple-300 hover:text-purple-100 active:text-purple-50 mb-6 transition-colors duration-200 ease-out hover:scale-105 active:scale-95">
         <ArrowLeft className="w-5 h-5" /> Volver a inicio
       </button>
 
@@ -161,7 +175,7 @@ export function AdminPage({ onBack }: AdminPageProps) {
                   </div>
                   <Button 
                     variant="outline" 
-                    className="border-red-500/50 text-red-200 hover:bg-red-900/20 flex-shrink-0"
+                    className="border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out flex-shrink-0"
                     disabled={loading[c.id]}
                     onClick={() => deleteComment(c.id)}
                   >
@@ -195,11 +209,11 @@ export function AdminPage({ onBack }: AdminPageProps) {
                     </span>
                   </div>
                   <div className="text-gray-300 text-sm mb-3 break-words">{r.content}</div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button 
                       size="sm" 
                       disabled={loading[r.id] || r.status === 'reviewed'}
-                      className="bg-blue-700 hover:bg-blue-600 disabled:opacity-50"
+                      className="bg-blue-700 hover:bg-blue-600 active:scale-95 disabled:opacity-50 transition-all duration-200 ease-out"
                       onClick={() => setReportStatus(r.id, 'reviewed')}
                     >
                       {loading[r.id] ? 'Procesando...' : 'Marcar revisado'}
@@ -207,10 +221,18 @@ export function AdminPage({ onBack }: AdminPageProps) {
                     <Button 
                       size="sm" 
                       disabled={loading[r.id] || r.status === 'fixed'}
-                      className="bg-green-700 hover:bg-green-600 disabled:opacity-50"
+                      className="bg-green-700 hover:bg-green-600 active:scale-95 disabled:opacity-50 transition-all duration-200 ease-out"
                       onClick={() => setReportStatus(r.id, 'fixed')}
                     >
                       {loading[r.id] ? 'Procesando...' : 'Marcar arreglado'}
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      disabled={loading[r.id]}
+                      className="bg-red-700 hover:bg-red-600 active:scale-95 disabled:opacity-50 transition-all duration-200 ease-out ml-auto"
+                      onClick={() => deleteReport(r.id)}
+                    >
+                      {loading[r.id] ? 'Eliminando...' : 'Eliminar'}
                     </Button>
                   </div>
                 </div>
@@ -271,12 +293,12 @@ export function AdminPage({ onBack }: AdminPageProps) {
                       setEdits(prev => ({ ...prev, [s.id]: { ...prev[s.id], rankingName: val, dirty: true } }));
                     }}
                   />
-                  <Button size="sm" className="bg-purple-700 hover:bg-purple-600 text-white" disabled={!edits[s.id]?.dirty || edits[s.id]?.saving} onClick={() => saveRow(s)}>
+                  <Button size="sm" className="bg-purple-700 hover:bg-purple-600 active:scale-95 disabled:opacity-50 transition-all duration-200 ease-out text-white" disabled={!edits[s.id]?.dirty || edits[s.id]?.saving} onClick={() => saveRow(s)}>
                     {edits[s.id]?.saving ? 'Guardando...' : 'Guardar'}
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-red-500/50 text-red-200 hover:bg-red-900/20"
+                    className="border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out"
                     disabled={loading[s.id]}
                     onClick={() => deleteScore(s.id)}
                   >

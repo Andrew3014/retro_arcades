@@ -201,7 +201,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
 
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-purple-300 hover:text-purple-100 mb-4 sm:mb-6 transition-colors"
+        className="flex items-center gap-2 text-purple-300 hover:text-purple-100 active:text-purple-50 mb-4 sm:mb-6 transition-colors duration-200 ease-out hover:scale-105 active:scale-95"
       >
         <ArrowLeft className="w-5 h-5" />
         <span className="text-sm sm:text-base">Volver a inicio</span>
@@ -353,7 +353,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
                 className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white text-sm disabled:opacity-50"
               />
               <button
-                className="w-full bg-blue-700 hover:bg-blue-600 disabled:opacity-50 text-white rounded py-2 text-sm transition-colors"
+                className="w-full bg-blue-700 hover:bg-blue-600 active:bg-blue-700 active:scale-95 disabled:opacity-50 text-white rounded py-2 text-sm transition-all duration-200 ease-out"
                 onClick={handleCommentSubmit}
                 disabled={submitting.comment || !comment.trim()}
               >
@@ -375,7 +375,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
                 className="w-full bg-black/50 border border-purple-500/40 rounded px-3 py-2 text-white text-sm disabled:opacity-50"
               />
               <button
-                className="w-full bg-pink-700 hover:bg-pink-600 disabled:opacity-50 text-white rounded py-2 text-sm transition-colors"
+                className="w-full bg-pink-700 hover:bg-pink-600 active:bg-pink-700 active:scale-95 disabled:opacity-50 text-white rounded py-2 text-sm transition-all duration-200 ease-out"
                 onClick={handleReportSubmit}
                 disabled={submitting.report || !report.trim()}
               >

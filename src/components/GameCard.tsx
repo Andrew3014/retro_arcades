@@ -14,7 +14,7 @@ export function GameCard({ id, title, year, description, color, onClick }: GameC
   return (
     <button
       onClick={onClick}
-      className="group relative bg-black/50 border-2 sm:border-4 border-purple-500/50 rounded-lg overflow-hidden hover:border-purple-400 transition-all hover:scale-105 w-full"
+      className="group relative bg-black/50 border-2 sm:border-4 border-purple-500/50 rounded-lg overflow-hidden hover:border-purple-400 active:scale-95 transition-all hover:scale-105 active:hover:scale-95 w-full duration-200 ease-out"
       style={{
         boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
         imageRendering: 'pixelated'
@@ -49,7 +49,7 @@ export function GameCard({ id, title, year, description, color, onClick }: GameC
           </p>
         </div>
         
-        <div className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded group-hover:from-purple-500 group-hover:to-pink-500 transition-all" style={{
+        <div className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded group-hover:from-purple-500 group-hover:to-pink-500 active:from-purple-700 active:to-pink-700 transition-all" style={{
           boxShadow: '0 0 15px rgba(168, 85, 247, 0.6)'
         }}>
           <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white" />

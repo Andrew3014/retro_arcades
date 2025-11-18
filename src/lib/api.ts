@@ -46,6 +46,7 @@ export const api = {
   adminDeleteComment: (id: number) => http(`/admin/comments/${id}`, { method: 'DELETE' }),
   adminReports: () => http('/admin/reports'),
   adminUpdateReport: (id: number, status: string) => http(`/admin/reports/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+  adminDeleteReport: (id: number) => http(`/admin/reports/${id}`, { method: 'DELETE' }),
   adminScores: () => http('/admin/scores'),
   adminUpdateScore: (id: number, score: number) => http(`/admin/scores/${id}`, { method: 'PUT', body: JSON.stringify({ score }) }),
   adminDeleteScore: (id: number) => http(`/admin/scores/${id}`, { method: 'DELETE' }),

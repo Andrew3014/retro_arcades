@@ -64,7 +64,7 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
         <div className="relative bg-black/50 p-6 border-b-2 border-purple-500/50">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            className="absolute top-4 right-4 text-gray-400 hover:text-white active:text-purple-300 transition-colors duration-200 ease-out"
           >
             <X className="w-6 h-6" />
           </button>
@@ -91,7 +91,7 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
               <div className="font-semibold" style={{ fontFamily: 'monospace' }}>No pudimos autenticarte</div>
               <div className="text-sm">{errorMsg}</div>
             </div>
-            <button onClick={() => setErrorMsg('')} className="text-pink-200 hover:text-white">✕</button>
+            <button onClick={() => setErrorMsg('')} className="text-pink-200 hover:text-white active:text-pink-400 transition-colors duration-200 ease-out">✕</button>
           </div>
         )}
 
@@ -168,7 +168,7 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white border-0 disabled:opacity-60"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 active:from-purple-700 active:to-pink-700 active:scale-95 text-white border-0 disabled:opacity-60 transition-all duration-200 ease-out"
             style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }}
           >
             {submitting ? 'Procesando...' : isLogin ? 'ENTRAR' : 'CREAR CUENTA'}
@@ -178,7 +178,7 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-purple-300 hover:text-purple-100 text-sm transition-colors"
+              className="text-purple-300 hover:text-purple-100 active:text-purple-50 text-sm transition-colors duration-200 ease-out"
             >
               {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
             </button>

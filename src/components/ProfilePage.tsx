@@ -75,7 +75,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
     <div className="max-w-3xl mx-auto px-4 py-6">
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-purple-300 hover:text-purple-100 mb-6 transition-colors"
+        className="flex items-center gap-2 text-purple-300 hover:text-purple-100 active:text-purple-50 mb-6 transition-colors duration-200 ease-out hover:scale-105 active:scale-95"
       >
         <ArrowLeft className="w-5 h-5" />
         Volver a inicio
@@ -124,7 +124,7 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
             />
             <Button 
               onClick={() => saveName(slug)} 
-              className="bg-purple-600 hover:bg-purple-700 text-white whitespace-nowrap"
+              className="bg-purple-600 hover:bg-purple-700 active:bg-purple-800 active:scale-95 disabled:opacity-50 text-white whitespace-nowrap transition-all duration-200 ease-out"
               disabled={saving[slug] || !rankingNames[slug]?.trim()}
             >
               <Save className="w-4 h-4 mr-2" /> 

@@ -42,6 +42,11 @@ router.put('/reports/:id', requireRole('admin'), async (req, res) => {
   res.json({ ok: true });
 });
 
+router.delete('/reports/:id', requireRole('admin'), async (req, res) => {
+  await pool.query('DELETE FROM reports WHERE id = ?', [req.params.id]);
+  res.json({ ok: true });
+});
+
 // Gestión de puntajes (CRUD para el módulo principal)
 router.get('/scores', requireRole('admin'), async (_req, res) => {
   const [rows] = await pool.query(

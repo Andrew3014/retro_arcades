@@ -27,7 +27,7 @@ export function RankingNameModal({ open, defaultName, onConfirm, onCancel }: Ran
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="relative w-full max-w-md bg-gradient-to-br from-slate-900 to-purple-900 border-4 border-purple-500 rounded-lg shadow-2xl overflow-hidden" style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.6)' }}>
         <div className="relative bg-black/50 p-6 border-b-2 border-purple-500/50">
-          <button onClick={onCancel} className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">
+          <button onClick={onCancel} className="absolute top-4 right-4 text-gray-400 hover:text-white active:text-purple-300 transition-colors duration-200 ease-out">
             <X className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-3 mb-2">
@@ -57,8 +57,8 @@ export function RankingNameModal({ open, defaultName, onConfirm, onCancel }: Ran
             <p className="text-xs text-gray-400">Si lo dejas vacío, usaremos tu nombre de usuario: <span className="text-purple-300">{defaultName}</span></p>
           </div>
           <div className="flex gap-3">
-            <Button type="button" variant="outline" onClick={onCancel} className="border-purple-500/50 text-purple-200 hover:bg-purple-600/30 hover:text-white w-1/3">Cancelar</Button>
-            <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 w-2/3" style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }}>Confirmar</Button>
+            <Button type="button" variant="outline" onClick={onCancel} className="border-purple-500/50 text-purple-200 hover:bg-purple-600/30 active:bg-purple-700/40 active:scale-95 hover:text-white transition-all duration-200 ease-out w-1/3">Cancelar</Button>
+            <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 active:scale-95 transition-all duration-200 ease-out w-2/3" style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }}>Confirmar</Button>
           </div>
         </form>
       </div>
