@@ -73,12 +73,18 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
         setScores(data);
         const g = await api.game(game);
         setMeta(g);
+        // Cargar info personal del juego - crítico para mostrar nombre de ranking
         try {
           const me = await api.meGame(game);
-          if (me) setMyInfo(me);
-        } catch {}
+          if (me) {
+            setMyInfo(me);
+          }
+        } catch (e) {
+          console.warn('Error cargando info personal:', e);
+          setMyInfo(null);
+        }
       } catch (e) {
-        // fallback vacío
+        console.warn('Error cargando datos del juego:', e);
         setScores([]);
       }
     };
@@ -88,12 +94,16 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
   const submitAndRefresh = async (finalScore: number, rankingName?: string) => {
     const res = await api.submitScore(game, finalScore, rankingName);
     setNewRecord(!!res.newRecord);
-    const data = await api.rankings(game, 50);
-    setScores(data);
+    // Recargar datos: ranking, info personal e información del juego
     try {
+      const data = await api.rankings(game, 50);
+      setScores(data);
       const me = await api.meGame(game);
       if (me) setMyInfo(me);
-    } catch {}
+      addToast('Puntaje guardado exitosamente');
+    } catch (e: any) {
+      addToast(e.message || 'Error al actualizar ranking', 'error');
+    }
     if (res.newRecord) setTimeout(() => setNewRecord(false), 4000);
   };
 

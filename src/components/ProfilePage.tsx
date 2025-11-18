@@ -36,8 +36,10 @@ export function ProfilePage({ onBack }: ProfilePageProps) {
         for (const game of games) {
           try {
             const meGame = await api.meGame(game);
-            names[game] = meGame?.ranking_name || null;
-          } catch {
+            // El backend devuelve 'rankingName' (camelCase)
+            names[game] = meGame?.rankingName || null;
+          } catch (e) {
+            console.warn(`Error cargando nombre para ${game}:`, e);
             names[game] = null;
           }
         }
