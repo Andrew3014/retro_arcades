@@ -5,6 +5,7 @@ node_modules/
 .dist/
 dist/
 .vite/
+build/
 
 # Local env
 .env
