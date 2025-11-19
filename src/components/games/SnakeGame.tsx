@@ -260,6 +260,15 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!gameStarted || isPaused || gameOver) return;
+      
+      // No interceptar si el foco está en un input, textarea o elemento editable
+      const target = e.target as HTMLElement | null;
+      const active = document.activeElement as HTMLElement | null;
+      const focused = target ?? active;
+      if (focused) {
+        const tag = focused.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || focused.isContentEditable) return;
+      }
 
       switch (e.key) {
         case 'ArrowUp':

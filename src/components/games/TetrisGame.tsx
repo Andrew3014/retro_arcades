@@ -275,7 +275,20 @@ export function TetrisGame({ onGameOver }: TetrisGameProps) {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignore when game is not active
       if (!gameStarted || isPaused || gameOver) return;
+
+      // If the user is focused on an input, textarea or an editable element,
+      // don't intercept keyboard events so typing works in forms/comments.
+      const target = e.target as HTMLElement | null;
+      const active = document.activeElement as HTMLElement | null;
+      const focused = target ?? active;
+      if (focused) {
+        const tag = focused.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || focused.isContentEditable) {
+          return;
+        }
+      }
 
       switch (e.key) {
         case 'ArrowLeft':

@@ -226,6 +226,15 @@ export function PongGame({ onGameOver }: PongGameProps) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // No interceptar si el foco está en un input, textarea o elemento editable
+      const target = e.target as HTMLElement | null;
+      const active = document.activeElement as HTMLElement | null;
+      const focused = target ?? active;
+      if (focused) {
+        const tag = focused.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || focused.isContentEditable) return;
+      }
+
       if (e.key === 'w' || e.key === 's' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
         keys.current.add(e.key);

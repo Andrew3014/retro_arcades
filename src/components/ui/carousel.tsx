@@ -77,6 +77,15 @@ function Carousel({
 
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
+      // If focus is inside an input/textarea or editable element, don't intercept
+      const target = event.target as HTMLElement | null;
+      const active = document.activeElement as HTMLElement | null;
+      const focused = target ?? active;
+      if (focused) {
+        const tag = focused.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || focused.isContentEditable) return;
+      }
+
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         scrollPrev();

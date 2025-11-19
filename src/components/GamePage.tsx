@@ -6,6 +6,36 @@ import { Page, User } from '../App';
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { RankingNameModal } from './RankingNameModal';
+import { ImageWithFallback } from './figma/ImageWithFallback';
+
+const normalizeImageUrl = (url?: string | null) => {
+  if (!url) return undefined;
+  // If it's already an absolute URL (starts with http/https or data:) return as-is
+  if (/^(https?:)?\/\//i.test(url) || url.startsWith('data:')) return url;
+  // Otherwise, treat as relative and prefix with API base
+  const base = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  try {
+    return new URL(url, base).href;
+  } catch {
+    return url;
+  }
+};
+
+// Default images per game slug (user-provided)
+const DEFAULT_GAME_IMAGES: Record<string, { creator?: string; company?: string }> = {
+  tetris: {
+    creator: 'https://tse4.mm.bing.net/th/id/OIP.oFbgz7-lAeXjMO5xyZz-ywHaJQ?rs=1&pid=ImgDetMain&o=7&rm=3',
+    company: 'https://tse3.mm.bing.net/th/id/OIP.YY7fQEc9P3NanrMmnxLKIAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3',
+  },
+  snake: {
+    creator: 'https://tse2.mm.bing.net/th/id/OIP.gmbUapF2uUC719-Zw5q3QAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3',
+    company: 'https://dplnews.com/wp-content/uploads/2020/10/dplnews_nokia_mc281020.jpg',
+  },
+  pong: {
+    creator: 'https://tse3.mm.bing.net/th/id/OIP.nht1oPLuSiGiEJGdYBUTdQHaJQ?rs=1&pid=ImgDetMain&o=7&rm=3',
+    company: 'https://tse3.mm.bing.net/th/id/OIP.NcbTQBbaqvR3mHVh-j0YEgHaGR?rs=1&pid=ImgDetMain&o=7&rm=3',
+  },
+};
 
 interface Toast { id: number; message: string; type: 'success' | 'error'; }
 
@@ -60,6 +90,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({ comment: false, report: false });
   const [userReports, setUserReports] = useState<Array<{ id: number; content: string; status: string; created_at: string }>>([]);
+  const [commentsList, setCommentsList] = useState<Array<{ id: number; user_id?: number; username?: string; content: string; created_at: string }>>([]);
 
   const addToast = (message: string, type: 'success' | 'error' = 'success') => {
     const id = Date.now();
@@ -73,7 +104,26 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
         const data = await api.rankings(game, 50);
         setScores(data);
         const g = await api.game(game);
+        // Normalize creator/company image URLs (handle relative paths returned by API)
+        g.creator_photo_url = normalizeImageUrl(g.creator_photo_url);
+        g.company_photo_url = normalizeImageUrl(g.company_photo_url);
+        // If API didn't provide images, use our defaults per slug when available
+        const defaults = DEFAULT_GAME_IMAGES[game];
+        if ((!g.creator_photo_url || g.creator_photo_url === '') && defaults?.creator) {
+          g.creator_photo_url = normalizeImageUrl(defaults.creator);
+        }
+        if ((!g.company_photo_url || g.company_photo_url === '') && defaults?.company) {
+          g.company_photo_url = normalizeImageUrl(defaults.company);
+        }
         setMeta(g);
+        // Cargar comentarios públicos del juego
+        try {
+          const comments = await api.getComments(game);
+          setCommentsList((comments || []).map((c: any) => ({ id: c.id, username: c.author || c.username || 'Anon', content: c.content, created_at: c.date || c.created_at })));
+        } catch (e) {
+          console.warn('Error cargando comentarios del juego:', e);
+          setCommentsList([]);
+        }
         // Cargar info personal del juego - crítico para mostrar nombre de ranking
         try {
           const me = await api.meGame(game);
@@ -152,6 +202,13 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
       await api.addComment(game, comment.trim());
       setComment('');
       addToast('Comentario publicado exitosamente');
+      // Refrescar comentarios públicos
+      try {
+        const comments = await api.getComments(game);
+        setCommentsList((comments || []).map((c: any) => ({ id: c.id, username: c.author || c.username || 'Anon', content: c.content, created_at: c.date || c.created_at })));
+      } catch (e) {
+        console.warn('Error recargando comentarios:', e);
+      }
     } catch (e: any) {
       addToast(e.message || 'Error al publicar comentario', 'error');
     } finally {
@@ -220,11 +277,31 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
               }}>
                 {info.title}
               </h2>
-              <span className="px-2 sm:px-3 py-1 bg-purple-600/50 text-purple-200 rounded text-sm" style={{
-                fontFamily: 'monospace'
-              }}>
-                EST. {info.year}
-              </span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  {meta?.creator_photo_url ? (
+                    <ImageWithFallback
+                      src={meta.creator_photo_url}
+                      alt={meta.creator_name || 'Creador'}
+                      className="w-10 h-10 rounded-md object-cover border border-purple-600/40"
+                      title={meta.creator_name || 'Creador'}
+                    />
+                  ) : null}
+                  {meta?.company_photo_url ? (
+                    <ImageWithFallback
+                      src={meta.company_photo_url}
+                      alt={meta.company_name || 'Empresa'}
+                      className="w-10 h-10 rounded-md object-cover border border-purple-600/40"
+                      title={meta.company_name || 'Empresa'}
+                    />
+                  ) : null}
+                </div>
+                <span className="px-2 sm:px-3 py-1 bg-purple-600/50 text-purple-200 rounded text-sm" style={{
+                  fontFamily: 'monospace'
+                }}>
+                  EST. {info.year}
+                </span>
+              </div>
             </div>
             
             {game === 'snake' && <SnakeGame onGameOver={handleGameOver} />}
@@ -248,16 +325,24 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <div className="text-center">
                   <div className="text-purple-200 text-xs mb-1">Creador</div>
-                  {meta.creator_photo_url && (
-                    <img src={meta.creator_photo_url} alt={meta.creator_name} className="w-full h-24 object-cover rounded" />
-                  )}
+                  {meta.creator_photo_url ? (
+                    <ImageWithFallback
+                      src={meta.creator_photo_url}
+                      alt={meta.creator_name || 'Creador'}
+                      className="w-full h-24 object-cover rounded"
+                    />
+                  ) : null}
                   <div className="text-gray-300 text-xs mt-1">{meta.creator_name}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-purple-200 text-xs mb-1">Empresa</div>
-                  {meta.company_photo_url && (
-                    <img src={meta.company_photo_url} alt={meta.company_name} className="w-full h-24 object-cover rounded" />
-                  )}
+                  {meta.company_photo_url ? (
+                    <ImageWithFallback
+                      src={meta.company_photo_url}
+                      alt={meta.company_name || 'Empresa'}
+                      className="w-full h-24 object-cover rounded"
+                    />
+                  ) : null}
                   <div className="text-gray-300 text-xs mt-1">{meta.company_name}</div>
                 </div>
               </div>
@@ -405,6 +490,30 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+            </div>
+            {/* Comentarios públicos */}
+            <div className="mt-4 pt-3 border-t border-purple-500/30">
+              <div className="flex items-center gap-2 mb-2">
+                <MessageCircle className="w-3 h-3 text-blue-300" />
+                <label className="text-purple-300 text-xs font-semibold">Comentarios</label>
+              </div>
+              {commentsList.length === 0 ? (
+                <p className="text-gray-400 text-xs">Aún no hay comentarios. Sé el primero en escribir uno.</p>
+              ) : (
+                <div className="space-y-3 max-h-60 overflow-y-auto">
+                  {commentsList.map((c) => (
+                    <div key={c.id} className="bg-black/25 border border-purple-500/20 rounded p-2 text-xs">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-white truncate" style={{ fontFamily: 'monospace' }}>{c.username || 'Anon'}</span>
+                        </div>
+                        <div className="text-gray-400 text-xxs ml-2">{new Date(c.created_at).toLocaleString()}</div>
+                      </div>
+                      <div className="text-white text-sm line-clamp-3">{c.content}</div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
