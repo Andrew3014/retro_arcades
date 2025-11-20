@@ -1,6 +1,5 @@
--- Crear base de datos (si no existe)
-CREATE DATABASE IF NOT EXISTS retro_gaming CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE retro_gaming;
+-- Usar la base `railway` (esta versión crea tablas en la base ya provista por Railway)
+USE railway;
 
 -- Tablas
 CREATE TABLE IF NOT EXISTS users (

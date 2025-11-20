@@ -1,11 +1,37 @@
 const mysql = require('mysql2/promise');
 
+// Support multiple ways to provide DB credentials:
+// - Individual vars: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
+// - Full URL: MYSQL_URL, MYSQL_PUBLIC_URL, DATABASE_URL (e.g. mysql://user:pass@host:port/db)
+
+function parseDatabaseUrl(url) {
+  try {
+    const u = new URL(url);
+    return {
+      host: u.hostname,
+      port: u.port ? Number(u.port) : 3306,
+      user: u.username,
+      password: u.password,
+      database: u.pathname ? u.pathname.replace(/^\//, '') : undefined,
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+// Prefer explicit connection URL env vars if present
+const connectionUrl = process.env.MYSQL_PUBLIC_URL || process.env.MYSQL_URL || process.env.DATABASE_URL;
+let cfg = null;
+if (connectionUrl) {
+  cfg = parseDatabaseUrl(connectionUrl);
+}
+
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: cfg?.host || process.env.DB_HOST || 'localhost',
+  port: cfg?.port || (process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306),
+  user: cfg?.user || process.env.DB_USER || 'root',
+  password: cfg?.password || process.env.DB_PASSWORD || '',
+  database: cfg?.database || process.env.DB_NAME || 'retro_gaming',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
