@@ -4,7 +4,5 @@
   "installCommand": "npm install",
   "outputDirectory": "build",
   "framework": "vite",
-  "env": [
-    "VITE_API_URL"
-  ]
+  "env": {}
 }
