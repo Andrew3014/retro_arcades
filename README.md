@@ -2,13 +2,18 @@
 
 Aplicación web para jugar 3 clásicos videojuegos (**Snake**, **Pong**, **Tetris**), aprender su historia y creadores, y competir en rankings globales con sistema de autenticación, comentarios públicos, reportes privados y panel de administración.
 
-🎯 **Totalmente responsivo** - Funciona perfectamente en celular, tablet y desktop con controles táctiles optimizados (48x48px).
+🎯 **Totalmente responsivo** - Funciona perfectamente en celular, tablet y desktop con:
+- Controles táctiles optimizados (botones 48x48px)
+- **Gestos de swipe** (deslizamiento) para controlar juegos en celular 📱
 
 ## 📋 Descripción del Sistema
 
 **Funcionalidades Principales:**
 
 - **Juegos Interactivos:** 3 juegos completamente funcionales (Snake, Pong, Tetris)
+  - 🕹️ Controles por teclado (desktop)
+  - 👆 Botones táctiles (celular/tablet)
+  - 👋 **Gestos de swipe** (deslizar con el dedo en celular)
 - **Sistema de Puntajes (CRUD Completo):**
   - **CREATE (POST):** Registrar puntaje tras cada partida
   - **READ (GET):** Consultar rankings globales e historial personal
@@ -199,10 +204,12 @@ La aplicación abrirá en: http://localhost:5173
 - ✅ `ProfilePage` - Edita nombre por juego, ve historial
 - ✅ `AdminPage` - Modera contenido, gestiona puntajes
 - ✅ **Responsivo:** Funciona 100% en móvil (Android/iOS) con controles táctiles
+- ✅ **Gestos de Swipe:** Deslizamiento táctil para controlar juegos en celular
 
 ## 📚 Documentación Adicional
 
 - **INFORME_TECNICO.md** - Documentación técnica detallada (arquitectura, schema BD, etc.)
+- **GESTOS_TACTILES.md** - Guía de gestos de swipe y cómo funcionan en cada juego
 - **src/Attributions.md** - Créditos y referencias de recursos
 - Documentación de código en español en todos los archivos fuente
   
