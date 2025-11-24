@@ -8,11 +8,12 @@ const app = express();
 
 // Preflight checks
 if (!process.env.JWT_SECRET) {
-  console.error('[FATAL] JWT_SECRET no está definido. Configura la variable de entorno en Railway o en .env para desarrollo.');
-  // No salir en dev local para permitir ver otros errores; salir en producción
+  console.error('[ERROR] JWT_SECRET no está definido. Auth fallará. Configura en Railway Variables.');
   if (process.env.NODE_ENV === 'production') {
+    console.error('[FATAL] Production mode sin JWT_SECRET. Deteniendo...');
     process.exit(1);
   }
+  console.warn('[DEV] Continuando sin JWT_SECRET (solo desarrollo).');
 }
 
 // Log de origenes permitidos
