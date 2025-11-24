@@ -58,21 +58,51 @@ const gameInfo: Record<string, GameInfo> = {
     title: 'Snake',
     year: '1976',
     history: 'Snake fue creado originalmente como un concepto en 1976 por Gremlin Industries bajo el nombre "Blockade". Ganó popularidad masiva cuando Nokia lo incluyó en sus teléfonos móviles en 1998. El jugador controla una serpiente que crece al comer objetos, y el desafío es evitar chocar con las paredes o con el propio cuerpo de la serpiente.',
-    controls: ['↑ ↓ ← → - Mover la serpiente', 'Espacio - Pausar/Reanudar'],
+    controls: [
+      '⌨️ TECLADO',
+      '↑ ↓ ← → - Mover la serpiente',
+      'Espacio - Pausar/Reanudar',
+      '',
+      '📱 CELULAR',
+      '👆 Botones directivos - Mover la serpiente',
+      '👋 Desliza en cualquier dirección - Controles por swipe',
+      'Botón Pausar - Pausar/Reanudar'
+    ],
     rules: ['Come la comida para crecer y ganar puntos', 'No choques con las paredes', 'No choques con tu propio cuerpo', 'Cada comida suma 10 puntos', 'La velocidad aumenta gradualmente']
   },
   pong: {
     title: 'Pong',
     year: '1972',
     history: 'Pong fue desarrollado por Atari en 1972 y es considerado uno de los primeros videojuegos comercialmente exitosos. Fue diseñado por Allan Alcorn como un ejercicio de entrenamiento, pero su simplicidad y jugabilidad adictiva lo convirtieron en un fenómeno arcade. Pong simulaba tenis de mesa en 2D y estableció las bases de la industria de los videojuegos.',
-    controls: ['W / S - Mover paleta izquierda', '↑ / ↓ - Mover paleta derecha', 'Espacio - Iniciar/Pausar'],
+    controls: [
+      '⌨️ TECLADO',
+      'W / S - Mover paleta izquierda',
+      '↑ / ↓ - Mover paleta derecha',
+      'Espacio - Iniciar/Pausar',
+      '',
+      '📱 CELULAR',
+      '👆 Botones ↑↓ - Mover tu paleta',
+      '👋 Desliza ↑ o ↓ - Control por swipe'
+    ],
     rules: ['Impide que la pelota pase tu paleta', 'Primer jugador en llegar a 11 puntos gana', 'La pelota acelera con cada rebote', 'Cada punto aumenta la dificultad', 'El ángulo de rebote depende de dónde golpees']
   },
   tetris: {
     title: 'Tetris',
     year: '1984',
     history: 'Tetris fue creado por Alexey Pajitnov en 1984 en la Unión Soviética. Es uno de los videojuegos más vendidos de la historia. El concepto simple pero adictivo de apilar bloques para formar líneas completas ha cautivado a generaciones. El juego ha sido adaptado a prácticamente todas las plataformas de videojuegos existentes y es considerado un clásico atemporal.',
-    controls: ['← → - Mover pieza', '↓ - Caída rápida', '↑ - Rotar pieza', 'Espacio - Caída instantánea'],
+    controls: [
+      '⌨️ TECLADO',
+      '← → - Mover pieza',
+      '↓ - Caída rápida',
+      '↑ - Rotar pieza',
+      'Espacio - Caída instantánea',
+      '',
+      '📱 CELULAR',
+      '👆 Botones direccionales - Mover, rotar y caer',
+      '👋 Desliza ← o → - Mover pieza',
+      '👋 Desliza ↑ - Rotar pieza',
+      '👋 Desliza ↓ - Acelerar caída'
+    ],
     rules: ['Completa líneas horizontales para eliminarlas', 'Apila las piezas estratégicamente', 'El juego termina si las piezas llegan arriba', 'Más líneas simultáneas = más puntos', 'La velocidad aumenta con el nivel']
   }
 };
@@ -357,9 +387,15 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
             </div>
             <ul className="space-y-1.5 sm:space-y-2">
               {info.controls.map((control, index) => (
-                <li key={index} className="text-gray-300 text-xs sm:text-sm flex items-start gap-2">
-                  <span className="text-purple-400 mt-0.5">▸</span>
-                  <span style={{ fontFamily: 'monospace' }}>{control}</span>
+                <li key={index} className={`flex items-start gap-2 ${
+                  control === '' ? 'my-2 border-t border-purple-500/20' : ''
+                } ${control.includes('TECLADO') || control.includes('CELULAR') ? 'text-purple-300 font-semibold text-xs sm:text-sm mt-2 mb-1' : 'text-gray-300 text-xs sm:text-sm'}`}>
+                  {!control.includes('TECLADO') && !control.includes('CELULAR') && control !== '' && (
+                    <span className="text-purple-400 mt-0.5 flex-shrink-0">▸</span>
+                  )}
+                  <span style={{ fontFamily: control === '' || control.includes('TECLADO') || control.includes('CELULAR') ? 'inherit' : 'monospace' }}>
+                    {control}
+                  </span>
                 </li>
               ))}
             </ul>
