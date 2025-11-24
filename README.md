@@ -96,6 +96,28 @@
 
   Validación de datos en backend con Zod y SQL parametrizado (mysql2/promise).
 
+  ## Despliegue en Producción (Railway + Vercel)
+
+  Para desplegar el proyecto en internet (accesible para docente y compañeros):
+
+  1. **Lee primero**: `SETUP_DEPLOYMENT.md` para paso-a-paso completo.
+  2. **Variables de entorno**: Configura Railway backend (MYSQL_PUBLIC_URL, JWT_SECRET, CORS_ORIGIN).
+  3. **Frontend**: Vercel auto-detecta Vite y despliega build estático.
+  4. **Verificación**: Usa `scripts/VERIFICACION_DEPLOYMENT.md` para validar endpoints.
+
+  **URL final compartible**: `https://<tu-dominio>.vercel.app` (ej. https://retro-arcades.vercel.app)
+
+  Credenciales de demo:
+  - Email: `admin@retro.com`
+  - Password: `ChangeMe123!` (cambiar tras primer acceso en producción)
+
+  ## Notas de Seguridad
+
+  - **JWT_SECRET**: Debe ser largo y aleatorio; no comitas en `.env`.
+  - **Contraseña admin**: Cambia `ChangeMe123!` tras primer login.
+  - **CORS**: Configura solo dominios de producción en Railway.
+  - **Plan gratuito Railway**: Base de datos puede hibernar si inactiva 7+ días. Reinicia servicio si ves errores DB.
+
   ## Registro de 5+ inserciones exitosas
 
   - Seeds crean 3 juegos y puntajes iniciales. Puedes registrar usuarios nuevos (registrando 2+ usuarios y enviando sus puntajes desde la UI) para superar 5 inserciones.
