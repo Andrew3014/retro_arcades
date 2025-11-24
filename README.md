@@ -208,6 +208,7 @@ La aplicación abrirá en: http://localhost:5173
 
 ## 📚 Documentación Adicional
 
+- **PLAN_PRUEBAS_DESPLIEGUE_CICD.md** - 📋 Plan completo de pruebas y despliegue CI/CD con Vercel, Railway y GitHub (Actividad 3)
 - **INFORME_TECNICO.md** - Documentación técnica detallada (arquitectura, schema BD, etc.)
 - **GESTOS_TACTILES.md** - Guía de gestos de swipe y cómo funcionan en cada juego
 - **src/Attributions.md** - Créditos y referencias de recursos
