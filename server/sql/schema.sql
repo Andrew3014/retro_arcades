@@ -1,5 +1,6 @@
 -- Usar la base `railway` (esta versión crea tablas en la base ya provista por Railway)
-USE railway;
+-- Nota: No utilizar USE <db>; Railway ya conecta a la base asignada.
+-- Si ejecutas localmente contra otra base, precede manualmente con: USE nombre_base;
 
 -- Tablas
 CREATE TABLE IF NOT EXISTS users (
@@ -73,10 +74,12 @@ CREATE TABLE IF NOT EXISTS reports (
 ) ENGINE=InnoDB;
 
 -- Seeds mínimos (5+ registros)
+-- Seed usuario admin (solo para entornos de prueba). Cambia el correo y contraseña.
+-- Contraseña utilizada: ChangeMe123!  (DEBES cambiarla en producción)
 INSERT INTO users (email, username, password_hash, role) VALUES
-  ('admin@retro.com','admin', '$2a$10$u0b8w7r3K1f1gk9dPp6pPuuF1m1m1m1m1m1m1m1m1m1m1m1m1', 'admin')
+  ('admin@retro.com','admin', '$2a$10$YxROJrkbd6y3.pbLy9p71es0DWzrk.4Et2/f5ynZH4eY4sgSskfvu', 'admin')
 ON DUPLICATE KEY UPDATE email = email;
--- Nota: reemplaza el hash por uno real luego.
+-- Para producción considera eliminar este seed y crear el admin manualmente.
 
 INSERT INTO games (slug, title, year, history, creator_name, creator_photo_url, company_name, company_photo_url, cover_url) VALUES
  ('snake','Snake','1976','Origen en Blockade (1976), popularizado por Nokia en 1998.','Gremlin/Concepto','https://upload.wikimedia.org/wikipedia/commons/3/3a/Gremlin_Industries_logo.png','Nokia','https://upload.wikimedia.org/wikipedia/commons/3/32/Nokia_wordmark.svg',''),

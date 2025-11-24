@@ -6,6 +6,18 @@ const { pool } = require('./db');
 
 const app = express();
 
+// Preflight checks
+if (!process.env.JWT_SECRET) {
+  console.error('[FATAL] JWT_SECRET no está definido. Configura la variable de entorno en Railway o en .env para desarrollo.');
+  // No salir en dev local para permitir ver otros errores; salir en producción
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+}
+
+// Log de origenes permitidos
+console.log('[Startup] CORS_ORIGIN permitidos:', (process.env.CORS_ORIGIN || 'localhost defaults').split(',').map(s=>s.trim()));
+
 const origins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s=>s.trim()) : ['http://localhost:3000','http://localhost:5173'];
 app.use(cors({
   origin: (origin, callback) => {
