@@ -78,12 +78,12 @@ router.post('/:slug/scores', authRequired, async (req, res) => {
       const initialName = candidate.length >= 3 ? candidate : (req.user.username || null);
       await conn.query('INSERT INTO user_games (user_id, game_id, ranking_name) VALUES (?,?,?)', [req.user.id, gameId, initialName]);
     }
-    // Obtener el mejor puntaje anterior ANTES de insertar el nuevo
+    // Obtener el mejor puntaje anterior ANTES de insertar el nuevo puntaje
     const [[prevBestBefore]] = await conn.query('SELECT MAX(score) AS best FROM scores WHERE user_id = ? AND game_id = ? AND is_deleted = 0', [req.user.id, gameId]);
 
     await conn.query('INSERT INTO scores (user_id, game_id, score) VALUES (?,?,?)', [req.user.id, gameId, score]);
 
-    const newRecord = !prevBestBefore.best || score > prevBestBefore.best; // récord si supera el anterior (o si no había)
+    const newRecord = !prevBestBefore.best || score > prevBestBefore.best; // Es récord si supera el anterior (o si no había puntaje)
 
     const [[rankRow]] = await conn.query(
       'SELECT COUNT(*) AS higher FROM (SELECT user_id, MAX(score) AS maxs FROM scores WHERE game_id = ? GROUP BY user_id) t WHERE t.maxs > ?',

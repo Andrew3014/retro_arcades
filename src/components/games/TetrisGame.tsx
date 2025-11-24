@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { GameControls } from '../GameControls';
 import { Countdown } from '../Countdown';
+import { useSwipeGesture } from '../../lib/useSwipeGesture';
 
 interface TetrisGameProps {
   onGameOver: (score: number) => void;
@@ -328,6 +329,37 @@ export function TetrisGame({ onGameOver }: TetrisGameProps) {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [gameStarted, isPaused, gameOver, moveDown, mergePiece, createNewPiece]);
+
+  // Gestos táctiles de swipe para celulares (Tetris)
+  useSwipeGesture({
+    onSwipeLeft: () => {
+      if (gameStarted && !isPaused && !gameOver) {
+        if (!checkCollision(currentPiece.current, pieceX.current - 1, pieceY.current)) {
+          pieceX.current--;
+        }
+      }
+    },
+    onSwipeRight: () => {
+      if (gameStarted && !isPaused && !gameOver) {
+        if (!checkCollision(currentPiece.current, pieceX.current + 1, pieceY.current)) {
+          pieceX.current++;
+        }
+      }
+    },
+    onSwipeDown: () => {
+      if (gameStarted && !isPaused && !gameOver) {
+        moveDown();
+      }
+    },
+    onSwipeUp: () => {
+      if (gameStarted && !isPaused && !gameOver) {
+        const rotated = rotatePiece(currentPiece.current);
+        if (!checkCollision(rotated, pieceX.current, pieceY.current)) {
+          currentPiece.current = rotated;
+        }
+      }
+    },
+  }, { minDistance: 25, maxDuration: 500 });
 
   const handleStart = () => {
     if (gameOver) {

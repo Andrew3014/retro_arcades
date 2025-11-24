@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { GameControls } from '../GameControls';
 import { Countdown } from '../Countdown';
+import { useSwipeGesture } from '../../lib/useSwipeGesture';
 
 interface PongGameProps {
   onGameOver: (score: number) => void;
@@ -253,6 +254,22 @@ export function PongGame({ onGameOver }: PongGameProps) {
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
+
+  // Gestos táctiles de swipe para celulares (Pong)
+  useSwipeGesture({
+    onSwipeUp: () => {
+      if (gameStarted && !isPaused && !gameOver) {
+        // Mover la paleta 1 hacia arriba
+        paddle1Y.current = Math.max(0, paddle1Y.current - 30);
+      }
+    },
+    onSwipeDown: () => {
+      if (gameStarted && !isPaused && !gameOver) {
+        // Mover la paleta 1 hacia abajo
+        paddle1Y.current = Math.min(CANVAS_HEIGHT - PADDLE_HEIGHT, paddle1Y.current + 30);
+      }
+    },
+  }, { minDistance: 20, maxDuration: 400 });
 
   const handleStart = () => {
     if (gameOver) {

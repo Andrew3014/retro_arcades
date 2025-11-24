@@ -1,8 +1,8 @@
 const mysql = require('mysql2/promise');
 
-// Support multiple ways to provide DB credentials:
-// - Individual vars: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
-// - Full URL: MYSQL_URL, MYSQL_PUBLIC_URL, DATABASE_URL (e.g. mysql://user:pass@host:port/db)
+// Soportar múltiples formas de proporcionar credenciales de base de datos:
+// - Variables individuales: DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME
+// - URL completa: MYSQL_URL, MYSQL_PUBLIC_URL, DATABASE_URL (p.ej. mysql://user:pass@host:port/db)
 
 function parseDatabaseUrl(url) {
   try {
@@ -19,7 +19,7 @@ function parseDatabaseUrl(url) {
   }
 }
 
-// Prefer explicit connection URL env vars if present
+// Preferir las variables de URL de conexión explícitas si están presentes
 const connectionUrl = process.env.MYSQL_PUBLIC_URL || process.env.MYSQL_URL || process.env.DATABASE_URL;
 let cfg = null;
 if (connectionUrl) {

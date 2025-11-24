@@ -10,9 +10,9 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 
 const normalizeImageUrl = (url?: string | null) => {
   if (!url) return undefined;
-  // If it's already an absolute URL (starts with http/https or data:) return as-is
+  // Si ya es una URL absoluta (http/https o data:) devolverla tal cual
   if (/^(https?:)?\/\//i.test(url) || url.startsWith('data:')) return url;
-  // Otherwise, treat as relative and prefix with API base
+  // Si no, tratarla como relativa y agregar la URL base de la API
   const base = import.meta.env.VITE_API_URL || 'http://localhost:4000';
   try {
     return new URL(url, base).href;
@@ -21,7 +21,7 @@ const normalizeImageUrl = (url?: string | null) => {
   }
 };
 
-// Default images per game slug (user-provided)
+// URLs de imágenes por defecto para cada juego
 const DEFAULT_GAME_IMAGES: Record<string, { creator?: string; company?: string }> = {
   tetris: {
     creator: 'https://tse4.mm.bing.net/th/id/OIP.oFbgz7-lAeXjMO5xyZz-ywHaJQ?rs=1&pid=ImgDetMain&o=7&rm=3',
@@ -104,10 +104,10 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
         const data = await api.rankings(game, 50);
         setScores(data);
         const g = await api.game(game);
-        // Normalize creator/company image URLs (handle relative paths returned by API)
+        // Normalizar URLs de imágenes del creador y empresa (manejar rutas relativas de la API)
         g.creator_photo_url = normalizeImageUrl(g.creator_photo_url);
         g.company_photo_url = normalizeImageUrl(g.company_photo_url);
-        // If API didn't provide images, use our defaults per slug when available
+        // Si la API no proporcionó imágenes, usar las por defecto por slug si están disponibles
         const defaults = DEFAULT_GAME_IMAGES[game];
         if ((!g.creator_photo_url || g.creator_photo_url === '') && defaults?.creator) {
           g.creator_photo_url = normalizeImageUrl(defaults.creator);
@@ -155,7 +155,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
   const submitAndRefresh = async (finalScore: number, rankingName?: string) => {
     const res = await api.submitScore(game, finalScore, rankingName);
     setNewRecord(!!res.newRecord);
-    // Recargar datos: ranking, info personal e información del juego
+    // Recargar datos del ranking, información personal e información del juego
     try {
       const data = await api.rankings(game, 50);
       setScores(data);
@@ -169,14 +169,14 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
   };
 
   const handleGameOver = async (score: number) => {
-    // No guardamos puntajes cero o negativos
+    // No guardar puntajes cero o negativos
     if (score <= 0) return;
     if (!user) {
       addToast('Debes iniciar sesión para guardar tu puntaje', 'error');
       return;
     }
     try {
-      // Si el usuario no tiene nombre de ranking aún, abrir modal estilado
+      // Si el usuario no tiene nombre de ranking aún, abrir el modal
       if (!myInfo || myInfo.rankingName == null) {
         setPendingScore(score);
         setShowNameModal(true);
@@ -202,7 +202,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
       await api.addComment(game, comment.trim());
       setComment('');
       addToast('Comentario publicado exitosamente');
-      // Refrescar comentarios públicos
+      // Recargar comentarios públicos
       try {
         const comments = await api.getComments(game);
         setCommentsList((comments || []).map((c: any) => ({ id: c.id, username: c.author || c.username || 'Anon', content: c.content, created_at: c.date || c.created_at })));
@@ -230,7 +230,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
       await api.report(game, report.trim());
       setReport('');
       addToast('Reporte enviado al administrador');
-      // Recargar reportes del usuario
+      // Recargar los reportes del usuario
       const reports = await api.myReports(game);
       setUserReports(reports);
     } catch (e: any) {
@@ -537,7 +537,7 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
             const s = pendingScore;
             setPendingScore(null);
             if (s != null) {
-              // Si cancela, guardamos usando el nombre por defecto (username)
+              // Si el usuario cancela, guardar usando el nombre de usuario por defecto
               try { await submitAndRefresh(s); } catch (e: any) { addToast(e.message || 'No se pudo guardar el puntaje', 'error'); }
             }
           }}

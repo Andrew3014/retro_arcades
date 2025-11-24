@@ -1,134 +1,208 @@
+# 🎮 Retro Gaming Web App (Fullstack)
 
-  # Retro Gaming Web App (Fullstack)
+Aplicación web para jugar 3 clásicos videojuegos (**Snake**, **Pong**, **Tetris**), aprender su historia y creadores, y competir en rankings globales con sistema de autenticación, comentarios públicos, reportes privados y panel de administración.
 
-  Aplicación para jugar títulos retro (Snake, Pong, Tetris), conocer su historia/creadores y competir en rankings globales con autenticación, comentarios públicos, reportes privados y panel de administración.
-  
-  🎮 **Totalmente responsivo** - Funciona perfectamente en celular, tablet y desktop con controles táctiles optimizados.
+🎯 **Totalmente responsivo** - Funciona perfectamente en celular, tablet y desktop con controles táctiles optimizados (48x48px).
 
-  ## Descripción del sistema
+## 📋 Descripción del Sistema
 
-  - Módulo principal: gestión de puntajes (scores) por juego.
-    - Create (POST): registrar puntaje tras cada partida.
-    - Read (GET): consultar rankings globales y el historial de partidas.
-    - Update (PUT): editar nombre a mostrar en ranking por juego (perfil) y (admin) ajustar puntaje.
-    - Delete (DELETE): eliminación lógica de puntajes (admin).
-  - Autenticación JWT con roles (usuario/admin).
-  - Rankings por juego (mejor puntaje por usuario y posición) y récord personal con aviso si mejoras tu marca.
-  - Nombre de ranking por juego: el usuario lo define la primera vez y luego lo edita desde Perfil.
-  - Historial de partidas del usuario.
-  - Comentarios públicos por juego y reportes privados para el admin.
-  - Panel Admin: gestionar comentarios, reportes y puntajes.
+**Funcionalidades Principales:**
 
-  ## Estructura
+- **Juegos Interactivos:** 3 juegos completamente funcionales (Snake, Pong, Tetris)
+- **Sistema de Puntajes (CRUD Completo):**
+  - **CREATE (POST):** Registrar puntaje tras cada partida
+  - **READ (GET):** Consultar rankings globales e historial personal
+  - **UPDATE (PUT):** Editar nombre en ranking y (admin) ajustar puntaje
+  - **DELETE (DELETE):** Eliminación de puntajes (admin)
 
-  - `src/` Frontend React + Vite.
-  - `server/` API Express + MySQL.
-    - `routes/`: `auth`, `games`, `me`, `admin`.
-    - `sql/schema.sql`: esquema y datos iniciales.
+- **Autenticación JWT:** Roles usuario/admin con tokens seguros
+- **Rankings Globales:** Top 50 por juego con detección de nuevo récord personal
+- **Nombre Personalizado:** Cada usuario define su nombre de ranking por juego
+- **Historial de Partidas:** Registro completo de todas las jugadas
+- **Comentarios Públicos:** Comunidad puede comentar en cada juego
+- **Reportes Privados:** Sistema para reportar bugs al administrador
+- **Panel Administrativo:** Gestión completa de usuarios, puntajes, comentarios y reportes
 
-  ## Requisitos previos
+## 📁 Estructura del Proyecto
 
-  - Node.js 18+
-  - MySQL Server y MySQL Workbench
+```
+.
+├── src/                    # Frontend React + Vite + TypeScript
+│   ├── components/         # Componentes React (15+ componentes)
+│   ├── lib/               # Funciones utilitarias (API client)
+│   ├── styles/            # Estilos CSS globales
+│   └── main.tsx          # Punto de entrada
+├── server/                # Backend Express.js + MySQL
+│   ├── routes/            # auth, games, me, admin
+│   ├── middleware/        # Autenticación JWT
+│   ├── sql/              # Schema y seeds de base de datos
+│   └── index.js          # Servidor Express
+├── build/                 # Build de producción (generado)
+└── package.json          # Dependencias
 
-  ## Configuración de la base de datos (MySQL Workbench)
+```
 
-  1) Abrir MySQL Workbench y ejecutar el script:
+## ⚙️ Requisitos Previos
 
-     - Archivo: `server/sql/schema.sql`
-     - Esto creará la BD `retro_gaming`, tablas y seeds (3 juegos + registros mínimos).
-     - Nota: el usuario admin seeded tiene un hash dummy. Puedes crear un admin así:
+- **Node.js 18+**
+- **MySQL Server 8+**
+- **MySQL Workbench** (para administrar la BD)
 
-     a. Registra un usuario via API (o `AuthModal`).
+## 🔧 Configuración de Base de Datos
 
-     b. Promuévelo a admin con SQL:
+### Paso 1: Crear la Base de Datos
 
-     ```sql
-     USE retro_gaming;
-     UPDATE users SET role = 'admin' WHERE email = 'tu_correo@dominio.com';
-     ```
+1. Abre **MySQL Workbench**
+2. Conéctate a tu servidor MySQL local
+3. Abre el archivo: `server/sql/schema.sql`
+4. Ejecuta el script completo (Ctrl+Enter)
 
-  2) Crea el archivo `server/.env` copiando desde `.env.example` y ajusta credenciales:
+Esto creará:
+- Base de datos: `retro_gaming`
+- 6 tablas: users, games, scores, comments, reports, user_games
+- Datos iniciales: 3 juegos + usuarios de prueba
 
-  ```
-  PORT=4000
-  JWT_SECRET=pon_un_secreto_largo
-  DB_HOST=localhost
-  DB_PORT=3306
-  DB_USER=root
-  DB_PASSWORD=tu_password
-  DB_NAME=retro_gaming
-  CORS_ORIGIN=http://localhost:5173
-  ```
+### Paso 2: Crear Variables de Entorno
 
-  ## Instalación y ejecución
+Crea el archivo `server/.env`:
 
-  Instala dependencias:
+```
+PORT=4000
+JWT_SECRET=tu_secreto_super_largo_minimo_32_caracteres
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_contraseña_mysql
+DB_NAME=retro_gaming
+CORS_ORIGIN=http://localhost:5173
+```
 
-  ```
-  npm install
-  ```
+### Credenciales de Prueba
 
-  Arranca la API (puerto 4000 por defecto):
+Después de ejecutar el schema.sql:
+- **Usuario normal:** luis@gmail.com / luis2025
+- **Administrador:** andrew@gmail.com / andrew2025
 
-  ```
-  npm run server:dev
-  ```
+## 🚀 Instalación y Ejecución
 
-  Arranca el frontend (Vite en 5173):
+### 1. Instalar Dependencias
 
-  ```
-  npm run dev
-  ```
+```bash
+npm install
+```
 
-  Asegúrate de exponer en el frontend la URL de la API (opcional si usas localhost):
+### 2. Iniciar el Backend (Express)
 
-  ```
-  VITE_API_URL=http://localhost:4000
-  ```
+```bash
+npm run server:dev
+```
 
-  ## Endpoints principales (resumen)
+El servidor estará en: http://localhost:4000
 
-  - Auth: `POST /auth/register`, `POST /auth/login`.
-  - Juegos: `GET /games`, `GET /games/:slug`, `GET /games/:slug/rankings`, `POST /games/:slug/scores`.
-  - Perfil: `GET /me`, `GET /me/scores`, `PUT /me/ranking-name`.
-  - Comentarios: `GET /games/:slug/comments`, `POST /games/:slug/comments`.
-  - Reportes: `POST /games/:slug/reports`.
-  - Admin: `GET /admin/overview`, `GET /admin/comments`, `DELETE /admin/comments/:id`, `GET /admin/reports`, `PUT /admin/reports/:id`, `GET /admin/scores`, `PUT /admin/scores/:id`, `DELETE /admin/scores/:id`.
+### 3. Iniciar el Frontend (Vite)
 
-  Validación de datos en backend con Zod y SQL parametrizado (mysql2/promise).
+```bash
+npm run dev
+```
 
-  ## Despliegue en Producción (Railway + Vercel)
+La aplicación abrirá en: http://localhost:5173
 
-  Para desplegar el proyecto en internet (accesible para docente y compañeros):
+## 📡 API Endpoints Principales
 
-  1. **Lee primero**: `SETUP_DEPLOYMENT.md` para paso-a-paso completo.
-  2. **Variables de entorno**: Configura Railway backend (MYSQL_PUBLIC_URL, JWT_SECRET, CORS_ORIGIN).
-  3. **Frontend**: Vercel auto-detecta Vite y despliega build estático.
-  4. **Verificación**: Usa `scripts/VERIFICACION_DEPLOYMENT.md` para validar endpoints.
+### Autenticación
+- `POST /auth/register` - Registrar nuevo usuario
+- `POST /auth/login` - Iniciar sesión
 
-  **URL final compartible**: `https://<tu-dominio>.vercel.app` (ej. https://retro-arcades.vercel.app)
+### Juegos
+- `GET /games` - Lista todos los juegos
+- `GET /games/:slug` - Detalles de un juego
+- `GET /games/:slug/rankings` - Top 50 por juego
 
-  Credenciales de demo:
-  - Email: `admin@retro.com`
-  - Password: `ChangeMe123!` (cambiar tras primer acceso en producción)
+### Puntajes
+- `POST /games/:slug/scores` - Registrar puntaje
+- `GET /me/scores` - Historial personal
 
-  ## Notas de Seguridad
+### Perfil
+- `GET /me` - Información del usuario
+- `PUT /me/ranking-name` - Cambiar nombre en ranking
 
-  - **JWT_SECRET**: Debe ser largo y aleatorio; no comitas en `.env`.
-  - **Contraseña admin**: Cambia `ChangeMe123!` tras primer login.
-  - **CORS**: Configura solo dominios de producción en Railway.
-  - **Plan gratuito Railway**: Base de datos puede hibernar si inactiva 7+ días. Reinicia servicio si ves errores DB.
+### Comunidad
+- `GET /games/:slug/comments` - Comentarios públicos
+- `POST /games/:slug/comments` - Crear comentario
+- `POST /games/:slug/reports` - Reportar bug/problema
 
-  ## Registro de 5+ inserciones exitosas
+### Administración (solo admin)
+- `GET /admin/comments` - Gestionar comentarios
+- `GET /admin/reports` - Gestionar reportes
+- `PUT /admin/scores/:id` - Editar puntaje
+- `DELETE /admin/users/:id` - Eliminar usuario
+### Panel de Administración (admin)
+- `GET /admin/overview` - Estadísticas generales
+- `GET /admin/comments` - Lista de comentarios
+- `DELETE /admin/comments/:id` - Eliminar comentario
+- `GET /admin/reports` - Lista de reportes
+- `PUT /admin/reports/:id` - Marcar reporte como visto
+- `GET /admin/scores` - Lista de puntajes
+- `PUT /admin/scores/:id` - Editar puntaje
+- `DELETE /admin/scores/:id` - Eliminar puntaje
 
-  - Seeds crean 3 juegos y puntajes iniciales. Puedes registrar usuarios nuevos (registrando 2+ usuarios y enviando sus puntajes desde la UI) para superar 5 inserciones.
+**Validación:** Todos los datos se validan con Zod en backend y SQL parametrizado con mysql2/promise.
 
-  ## Notas de integración UI
+## 🌐 Despliegue en Producción (Railway + Vercel)
 
-  - `AuthModal` ya usa la API para registro/login y guarda JWT en `localStorage`.
-  - `GamePage` ahora envía puntajes a la API, muestra ranking global y permite comentar/reportar.
-  - `RankingsPage` consulta rankings desde la API.
-  - `ProfilePage` permite editar el nombre de ranking por juego y ver historial.
-  - `AdminPage` modera comentarios/reportes y gestiona puntajes.
+### Instrucciones de Despliegue
+
+1. **Backend (Railway):**
+   - Conecta repositorio GitHub a Railway
+   - Configura variables de entorno en Railway:
+     - `MYSQL_PUBLIC_URL` - Conexión a base de datos
+     - `JWT_SECRET` - Token seguro (32+ caracteres)
+     - `CORS_ORIGIN` - Dominio del frontend Vercel
+     - `PORT` - 4000
+
+2. **Frontend (Vercel):**
+   - Importa repositorio desde GitHub
+   - Vercel detecta Vite automáticamente
+   - Configura variable: `VITE_API_URL` = URL del backend Railway
+
+3. **Base de Datos:**
+   - Crea base de datos MySQL en Railway o planeta scale
+   - Ejecuta `server/sql/schema.sql` en la BD
+   - Obtén la cadena de conexión pública
+
+4. **Verificación:**
+   - Prueba endpoints desde: https://insomnia.rest o Postman
+   - Verifica CORS está configurado correctamente
+   - Comprueba JWT generado correctamente
+
+**URL Final:** `https://<tu-proyecto>.vercel.app`
+
+### Credenciales de Demo
+
+- **Usuario:** luis@gmail.com / luis2025
+- **Admin:** andrew@gmail.com / andrew2025
+
+## 🔒 Notas de Seguridad
+
+- ⚠️ **JWT_SECRET**: Usa valor largo y aleatorio; NUNCA lo commits en Git
+- ⚠️ **Contraseña Admin**: Cambia en primera ejecución en producción
+- ⚠️ **CORS**: Configura solo dominios autorizados en Railway
+- ⚠️ **Rate Limiting**: Implementar en endpoints críticos (auth, scores)
+- ⚠️ **Validación**: Todos los inputs validados con Zod antes de BD
+- ⚠️ **SQL Injection**: Prevenido con SQL parametrizado (mysql2/promise)
+
+## ✅ Validación de Integración
+
+- ✅ `AuthModal` - Registro/login con API, JWT en localStorage
+- ✅ `GamePage` - Envía puntajes, muestra rankings, comentarios/reportes
+- ✅ `RankingsPage` - Ranking global top 50 por juego
+- ✅ `ProfilePage` - Edita nombre por juego, ve historial
+- ✅ `AdminPage` - Modera contenido, gestiona puntajes
+- ✅ **Responsivo:** Funciona 100% en móvil (Android/iOS) con controles táctiles
+
+## 📚 Documentación Adicional
+
+- **INFORME_TECNICO.md** - Documentación técnica detallada (arquitectura, schema BD, etc.)
+- **src/Attributions.md** - Créditos y referencias de recursos
+- Documentación de código en español en todos los archivos fuente
   

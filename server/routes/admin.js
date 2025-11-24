@@ -4,7 +4,7 @@ const { pool } = require('../db');
 
 const router = express.Router();
 
-// Todas las rutas de admin requieren autenticación
+// Todas las rutas de administrador requieren autenticación
 router.use(authRequired);
 
 router.get('/overview', requireRole('admin'), async (_req, res) => {
@@ -47,7 +47,7 @@ router.delete('/reports/:id', requireRole('admin'), async (req, res) => {
   res.json({ ok: true });
 });
 
-// Gestión de puntajes (CRUD para el módulo principal)
+// Gestión de puntajes (CRUD completo para el módulo principal)
 router.get('/scores', requireRole('admin'), async (_req, res) => {
   const [rows] = await pool.query(
     `SELECT s.id, g.slug AS game, u.username, ug.ranking_name, u.id AS user_id, s.score, s.is_deleted, s.created_at AS date

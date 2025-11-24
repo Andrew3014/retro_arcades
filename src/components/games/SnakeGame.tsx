@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { GameControls } from '../GameControls';
 import { Countdown } from '../Countdown';
+import { useSwipeGesture } from '../../lib/useSwipeGesture';
 
 interface SnakeGameProps {
   onGameOver: (score: number) => void;
@@ -293,6 +294,30 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [gameStarted, isPaused, gameOver]);
+
+  // Gestos táctiles de swipe para celulares
+  useSwipeGesture({
+    onSwipeUp: () => {
+      if (gameStarted && !isPaused && !gameOver && direction.current !== 'DOWN') {
+        nextDirection.current = 'UP';
+      }
+    },
+    onSwipeDown: () => {
+      if (gameStarted && !isPaused && !gameOver && direction.current !== 'UP') {
+        nextDirection.current = 'DOWN';
+      }
+    },
+    onSwipeLeft: () => {
+      if (gameStarted && !isPaused && !gameOver && direction.current !== 'RIGHT') {
+        nextDirection.current = 'LEFT';
+      }
+    },
+    onSwipeRight: () => {
+      if (gameStarted && !isPaused && !gameOver && direction.current !== 'LEFT') {
+        nextDirection.current = 'RIGHT';
+      }
+    },
+  }, { minDistance: 30, maxDuration: 500 });
 
   const handleStart = () => {
     if (gameOver) {

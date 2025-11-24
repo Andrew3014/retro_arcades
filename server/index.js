@@ -6,17 +6,17 @@ const { pool } = require('./db');
 
 const app = express();
 
-// Preflight checks
+// Verificaciones previas de arranque
 if (!process.env.JWT_SECRET) {
-  console.error('[ERROR] JWT_SECRET no está definido. Auth fallará. Configura en Railway Variables.');
+  console.error('[ERROR] JWT_SECRET no está definido. Autenticación fallará. Configura en Railway Variables.');
   if (process.env.NODE_ENV === 'production') {
-    console.error('[FATAL] Production mode sin JWT_SECRET. Deteniendo...');
+    console.error('[FATAL] Modo producción sin JWT_SECRET. Deteniendo...');
     process.exit(1);
   }
-  console.warn('[DEV] Continuando sin JWT_SECRET (solo desarrollo).');
+  console.warn('[DEV] Continuando sin JWT_SECRET (solo en desarrollo).');
 }
 
-// Log de origenes permitidos
+// Registrar los orígenes CORS permitidos
 console.log('[Startup] CORS_ORIGIN permitidos:', (process.env.CORS_ORIGIN || 'localhost defaults').split(',').map(s=>s.trim()));
 
 const origins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s=>s.trim()) : ['http://localhost:3000','http://localhost:5173'];
