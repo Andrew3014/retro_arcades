@@ -56,12 +56,12 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-gradient-to-br from-slate-900 to-purple-900 border-4 border-purple-500 rounded-lg shadow-2xl overflow-hidden"
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm">
+      <div className="relative w-full max-w-md bg-gradient-to-br from-slate-900 to-purple-900 border-2 sm:border-4 border-purple-500 rounded-lg shadow-2xl overflow-hidden max-h-screen sm:max-h-none overflow-y-auto sm:overflow-visible"
         style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.6)' }}>
         
         {/* Header */}
-        <div className="relative bg-black/50 p-6 border-b-2 border-purple-500/50">
+        <div className="relative bg-black/50 p-4 sm:p-6 border-b-2 border-purple-500/50">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-400 hover:text-white active:text-purple-300 transition-colors duration-200 ease-out"
@@ -69,71 +69,71 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
             <X className="w-6 h-6" />
           </button>
           
-          <div className="flex items-center gap-3 mb-2">
-            <Gamepad2 className="w-8 h-8 text-purple-400" />
-            <h2 className="text-white" style={{
+          <div className="flex items-center gap-2 sm:gap-3 mb-2">
+            <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400 flex-shrink-0" />
+            <h2 className="text-white text-lg sm:text-xl font-bold" style={{
               textShadow: '0 0 10px rgba(168, 85, 247, 0.8)',
               fontFamily: 'monospace'
             }}>
-              {isLogin ? 'INICIAR SESIÓN' : 'REGISTRARSE'}
+              {isLogin ? 'INICIAR' : 'REGISTRAR'}
             </h2>
           </div>
-          <p className="text-purple-200 text-sm">
-            {isLogin ? 'Continúa tu partida' : 'Únete a la comunidad retro'}
+          <p className="text-purple-200 text-xs sm:text-sm leading-snug">
+            {isLogin ? 'Continúa tu partida' : 'Únete a la comunidad'}
           </p>
         </div>
 
         {/* Error banner */}
         {errorMsg && (
-          <div className="mx-6 mt-4 rounded border-2 border-pink-600/60 bg-gradient-to-r from-pink-900/60 to-red-900/50 text-pink-100 px-4 py-2 flex items-start gap-2" role="alert">
-            <span>⚠️</span>
-            <div className="flex-1">
-              <div className="font-semibold" style={{ fontFamily: 'monospace' }}>No pudimos autenticarte</div>
-              <div className="text-sm">{errorMsg}</div>
+          <div className="mx-4 sm:mx-6 mt-4 rounded border-2 border-pink-600/60 bg-gradient-to-r from-pink-900/60 to-red-900/50 text-pink-100 px-3 sm:px-4 py-2 flex items-start gap-2 text-xs sm:text-sm" role="alert">
+            <span className="flex-shrink-0">⚠️</span>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold" style={{ fontFamily: 'monospace' }}>Error</div>
+              <div className="text-xs">{errorMsg}</div>
             </div>
-            <button onClick={() => setErrorMsg('')} className="text-pink-200 hover:text-white active:text-pink-400 transition-colors duration-200 ease-out">✕</button>
+            <button onClick={() => setErrorMsg('')} className="text-pink-200 hover:text-white active:text-pink-400 transition-colors duration-200 ease-out flex-shrink-0">✕</button>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
           {!isLogin && (
-            <div className="space-y-2">
-              <Label htmlFor="username" className="text-purple-200 flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Nombre de usuario
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="username" className="text-purple-200 flex items-center gap-2 text-xs sm:text-sm">
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                Usuario
               </Label>
               <Input
                 id="username"
                 type="text"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400"
+                className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400 text-sm"
                 placeholder="Jugador123"
                 required={!isLogin}
               />
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-purple-200 flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              Correo electrónico
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="email" className="text-purple-200 flex items-center gap-2 text-xs sm:text-sm">
+              <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+              Correo
             </Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400"
-              placeholder="jugador@retro.com"
+              className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400 text-sm"
+              placeholder="tu@email.com"
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-purple-200 flex items-center gap-2">
-              <Lock className="w-4 h-4" />
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="password" className="text-purple-200 flex items-center gap-2 text-xs sm:text-sm">
+              <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
               Contraseña
             </Label>
             <Input
@@ -141,24 +141,24 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
               type="password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400"
+              className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400 text-sm"
               placeholder="••••••••"
               required
             />
           </div>
 
           {!isLogin && (
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-purple-200 flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                Confirmar contraseña
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="confirmPassword" className="text-purple-200 flex items-center gap-2 text-xs sm:text-sm">
+                <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                Confirmar
               </Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400"
+                className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400 text-sm"
                 placeholder="••••••••"
                 required={!isLogin}
               />
@@ -168,27 +168,27 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 active:from-purple-700 active:to-pink-700 active:scale-95 text-white border-0 disabled:opacity-60 transition-all duration-200 ease-out"
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 active:from-purple-700 active:to-pink-700 active:scale-95 text-white border-0 disabled:opacity-60 transition-all duration-200 ease-out py-2 sm:py-3 text-sm sm:text-base font-semibold"
             style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }}
           >
-            {submitting ? 'Procesando...' : isLogin ? 'ENTRAR' : 'CREAR CUENTA'}
+            {submitting ? 'Procesando...' : isLogin ? 'ENTRAR' : 'CREAR'}
           </Button>
 
           <div className="text-center">
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-purple-300 hover:text-purple-100 active:text-purple-50 text-sm transition-colors duration-200 ease-out"
+              className="text-purple-300 hover:text-purple-100 active:text-purple-50 text-xs sm:text-sm transition-colors duration-200 ease-out"
             >
-              {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
+              {isLogin ? '¿Sin cuenta? Regístrate' : '¿Con cuenta? Inicia'}
             </button>
           </div>
         </form>
 
         {/* Footer */}
-        <div className="bg-black/30 p-4 border-t-2 border-purple-500/50">
-          <p className="text-gray-400 text-xs text-center">
-            Conecta con tu base de datos para guardar tu progreso y competir en rankings globales
+        <div className="bg-black/30 p-3 sm:p-4 border-t-2 border-purple-500/50">
+          <p className="text-gray-400 text-xs text-center leading-tight">
+            Guarda tu progreso y compite en rankings globales
           </p>
         </div>
       </div>

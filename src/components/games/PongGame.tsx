@@ -326,53 +326,57 @@ export function PongGame({ onGameOver }: PongGameProps) {
         onFullscreen={handleFullscreen}
       />
 
-      <div className="relative w-full flex justify-center overflow-hidden">
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          className="border-2 sm:border-4 border-blue-500 rounded max-w-full h-auto"
-          style={{
-            boxShadow: '0 0 30px rgba(59, 130, 246, 0.6)',
-            imageRendering: 'pixelated',
-            width: '100%',
-            maxWidth: '600px'
-          }}
-        />
+      <div className="relative w-full flex justify-center px-3 sm:px-4 lg:px-6">
+        <div className="relative w-full max-w-3xl bg-black/20 rounded-lg border-2 sm:border-4 border-blue-500/70 p-2 sm:p-3 lg:p-4" style={{
+          boxShadow: '0 0 30px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1)'
+        }}>
+          <canvas
+            ref={canvasRef}
+            width={CANVAS_WIDTH}
+            height={CANVAS_HEIGHT}
+            className="w-full h-auto block rounded"
+            style={{
+              boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)',
+              imageRendering: 'pixelated',
+              aspectRatio: `${CANVAS_WIDTH}/${CANVAS_HEIGHT}`,
+              backgroundColor: '#0a0a1a'
+            }}
+          />
 
-        {showCountdown && <Countdown onComplete={handleCountdownComplete} />}
+          {showCountdown && <Countdown onComplete={handleCountdownComplete} />}
 
-        {!gameStarted && !gameOver && !showCountdown && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded">
-            <div className="text-center px-4">
-              <p className="text-white mb-2 text-sm sm:text-base" style={{ fontFamily: 'monospace' }}>
-                Presiona INICIAR para comenzar
-              </p>
-              <p className="text-gray-300 text-xs sm:text-sm" style={{ fontFamily: 'monospace' }}>
-                Primer jugador en llegar a {WINNING_SCORE} gana
-              </p>
+          {!gameStarted && !gameOver && !showCountdown && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-sm">
+              <div className="text-center px-4">
+                <p className="text-white mb-2 text-xs sm:text-sm lg:text-base font-semibold" style={{ fontFamily: 'monospace' }}>
+                  Presiona INICIAR
+                </p>
+                <p className="text-gray-300 text-xs" style={{ fontFamily: 'monospace' }}>
+                  Gana quien llegue a {WINNING_SCORE}
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {gameOver && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/80 rounded">
-            <div className="text-center px-4">
-              <p className="text-yellow-400 mb-2 text-sm sm:text-base animate-pulse" style={{ 
-                fontFamily: 'monospace',
-                textShadow: '0 0 20px rgba(234, 179, 8, 0.8)'
-              }}>
-                ¡{winner} GANA!
-              </p>
-              <p className="text-white mb-3 sm:mb-4 text-sm sm:text-base" style={{ fontFamily: 'monospace' }}>
-                <span className="text-blue-400">{score.player1}</span> - <span className="text-red-400">{score.player2}</span>
-              </p>
-              <p className="text-gray-300 text-xs sm:text-sm" style={{ fontFamily: 'monospace' }}>
-                Presiona INICIAR para jugar de nuevo
-              </p>
+          {gameOver && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/85 rounded-sm backdrop-blur-sm">
+              <div className="text-center px-4 py-3 sm:py-6">
+                <p className="text-yellow-400 mb-2 text-base sm:text-lg lg:text-2xl font-bold animate-pulse" style={{ 
+                  fontFamily: 'monospace',
+                  textShadow: '0 0 20px rgba(234, 179, 8, 0.8)'
+                }}>
+                  ¡{winner} GANA!
+                </p>
+                <p className="text-white mb-2 sm:mb-3 text-sm sm:text-base font-semibold" style={{ fontFamily: 'monospace' }}>
+                  <span className="text-blue-400">{score.player1}</span> - <span className="text-red-400">{score.player2}</span>
+                </p>
+                <p className="text-gray-300 text-xs" style={{ fontFamily: 'monospace' }}>
+                  Presiona INICIAR para jugar de nuevo
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

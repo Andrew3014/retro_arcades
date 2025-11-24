@@ -264,14 +264,14 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
         <span className="text-sm sm:text-base">Volver a inicio</span>
       </button>
 
-      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="w-full grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
         {/* Game Canvas */}
-        <div className="lg:col-span-2">
-          <div className="bg-black/50 border-2 sm:border-4 border-purple-500 rounded-lg p-3 sm:p-4" style={{
-            boxShadow: '0 0 30px rgba(168, 85, 247, 0.5)'
+        <div className="lg:col-span-2 w-full">
+          <div className="bg-gradient-to-b from-black/60 to-black/40 border-2 sm:border-4 border-purple-500/70 rounded-lg p-3 sm:p-4 lg:p-6 backdrop-blur-sm w-full" style={{
+            boxShadow: '0 0 30px rgba(168, 85, 247, 0.4), inset 0 0 20px rgba(168, 85, 247, 0.05)'
           }}>
-            <div className="flex items-center justify-between mb-3 sm:mb-4 flex-wrap gap-2">
-              <h2 className="text-white text-lg sm:text-xl md:text-2xl" style={{
+            <div className="flex items-center justify-between mb-3 sm:mb-4 lg:mb-6 flex-wrap gap-2">
+              <h2 className="text-white text-base sm:text-xl md:text-2xl lg:text-3xl font-bold" style={{
                 textShadow: '0 0 10px rgba(168, 85, 247, 0.8)',
                 fontFamily: 'monospace'
               }}>

@@ -335,73 +335,81 @@ export function SnakeGame({ onGameOver }: SnakeGameProps) {
   }, []);
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center gap-3 sm:gap-4">
-      <div className="flex items-center justify-between w-full max-w-[400px] px-2">
-        <div className="text-white text-sm sm:text-base" style={{ fontFamily: 'monospace' }}>
-          PUNTOS: <span className="text-green-400" style={{ textShadow: '0 0 10px rgba(16, 185, 129, 0.8)' }}>{score}</span>
+    <div ref={containerRef} className="w-full flex flex-col items-center gap-3 sm:gap-4 lg:gap-6">
+      {/* Score Display */}
+      <div className="w-full flex items-center justify-between px-3 sm:px-4 lg:px-6 max-w-2xl">
+        <div className="text-white text-xs sm:text-sm lg:text-base font-bold tracking-widest" style={{ fontFamily: 'monospace' }}>
+          PUNTOS: <span className="text-green-400 animate-pulse" style={{ textShadow: '0 0 10px rgba(16, 185, 129, 0.8)' }}>{score}</span>
         </div>
         {isPaused && (
-          <div className="text-yellow-400 animate-pulse text-sm sm:text-base" style={{ fontFamily: 'monospace' }}>
-            PAUSADO
+          <div className="text-yellow-400 animate-pulse text-xs sm:text-sm lg:text-base font-bold tracking-widest" style={{ fontFamily: 'monospace' }}>
+            ⏸ PAUSADO
           </div>
         )}
       </div>
 
-      <GameControls
-        isPlaying={gameStarted}
-        isPaused={isPaused}
-        isFullscreen={isFullscreen}
-        onStart={handleStart}
-        onPause={handlePause}
-        onReset={handleReset}
-        onFullscreen={handleFullscreen}
-      />
-      
-      <div className="relative w-full flex justify-center">
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_SIZE}
-          height={CANVAS_SIZE}
-          className="border-2 sm:border-4 border-green-500 rounded max-w-full h-auto"
-          style={{
-            boxShadow: '0 0 30px rgba(16, 185, 129, 0.6)',
-            imageRendering: 'pixelated',
-            width: '100%',
-            maxWidth: '400px',
-            aspectRatio: '1/1'
-          }}
+      {/* Controls */}
+      <div className="w-full max-w-2xl px-3 sm:px-4 lg:px-6">
+        <GameControls
+          isPlaying={gameStarted}
+          isPaused={isPaused}
+          isFullscreen={isFullscreen}
+          onStart={handleStart}
+          onPause={handlePause}
+          onReset={handleReset}
+          onFullscreen={handleFullscreen}
         />
-        
-        {showCountdown && <Countdown onComplete={handleCountdownComplete} />}
-        
-        {!gameStarted && !gameOver && !showCountdown && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded">
-            <div className="text-center px-4">
-              <p className="text-white mb-2 text-sm sm:text-base" style={{ fontFamily: 'monospace' }}>
-                Presiona INICIAR para comenzar
-              </p>
+      </div>
+      
+      {/* Canvas Container */}
+      <div className="relative w-full flex justify-center px-3 sm:px-4 lg:px-6">
+        <div className="relative w-full max-w-2xl bg-black/20 rounded-lg border-2 sm:border-4 border-green-500/70 p-2 sm:p-3 lg:p-4" style={{
+          boxShadow: '0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(16, 185, 129, 0.1)'
+        }}>
+          <canvas
+            ref={canvasRef}
+            width={CANVAS_SIZE}
+            height={CANVAS_SIZE}
+            className="w-full h-auto block rounded"
+            style={{
+              boxShadow: '0 0 20px rgba(16, 185, 129, 0.5)',
+              imageRendering: 'pixelated',
+              aspectRatio: '1/1',
+              backgroundColor: '#0a0a1a'
+            }}
+          />
+          
+          {showCountdown && <Countdown onComplete={handleCountdownComplete} />}
+          
+          {!gameStarted && !gameOver && !showCountdown && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-sm">
+              <div className="text-center px-4">
+                <p className="text-white text-xs sm:text-sm lg:text-base font-semibold" style={{ fontFamily: 'monospace' }}>
+                  Presiona INICIAR
+                </p>
+              </div>
             </div>
-          </div>
-        )}
-        
-        {gameOver && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/80 rounded">
-            <div className="text-center px-4">
-              <p className="text-red-400 mb-2 text-base sm:text-lg animate-pulse" style={{ 
-                fontFamily: 'monospace',
-                textShadow: '0 0 20px rgba(239, 68, 68, 0.8)'
-              }}>
-                ¡GAME OVER!
-              </p>
-              <p className="text-white mb-3 sm:mb-4 text-sm sm:text-base" style={{ fontFamily: 'monospace' }}>
-                Puntuación: <span className="text-green-400">{score}</span>
-              </p>
-              <p className="text-gray-300 text-xs sm:text-sm" style={{ fontFamily: 'monospace' }}>
-                Presiona INICIAR para jugar de nuevo
-              </p>
+          )}
+          
+          {gameOver && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/85 rounded-sm backdrop-blur-sm">
+              <div className="text-center px-4 py-3 sm:py-6">
+                <p className="text-red-400 mb-2 text-base sm:text-lg lg:text-2xl font-bold animate-pulse" style={{ 
+                  fontFamily: 'monospace',
+                  textShadow: '0 0 20px rgba(239, 68, 68, 0.8)'
+                }}>
+                  ¡GAME OVER!
+                </p>
+                <p className="text-white mb-2 sm:mb-3 text-sm sm:text-base font-semibold" style={{ fontFamily: 'monospace' }}>
+                  Puntuación: <span className="text-green-400">{score}</span>
+                </p>
+                <p className="text-gray-300 text-xs" style={{ fontFamily: 'monospace' }}>
+                  Presiona INICIAR para jugar de nuevo
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
