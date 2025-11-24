@@ -2,6 +2,8 @@
   # Retro Gaming Web App (Fullstack)
 
   Aplicación para jugar títulos retro (Snake, Pong, Tetris), conocer su historia/creadores y competir en rankings globales con autenticación, comentarios públicos, reportes privados y panel de administración.
+  
+  🎮 **Totalmente responsivo** - Funciona perfectamente en celular, tablet y desktop con controles táctiles optimizados.
 
   ## Descripción del sistema
 
