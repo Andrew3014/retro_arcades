@@ -19,21 +19,45 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
     confirmPassword: ''
   });
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validatePassword = (pwd: string) => pwd.length >= 6;
+  const validateUsername = (uname: string) => uname.length >= 3;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+    setSuccessMsg('');
     if (submitting) return;
-    // Validaciones básicas
-    if (!isLogin && formData.password !== formData.confirmPassword) {
-      setErrorMsg('Las contraseñas no coinciden');
+
+    // Validaciones detalladas
+    if (!formData.email || !formData.password || (!isLogin && !formData.username)) {
+      setErrorMsg('❌ Por favor completa todos los campos requeridos');
       return;
     }
 
-    if (!formData.email || !formData.password || (!isLogin && !formData.username)) {
-      setErrorMsg('Por favor completa todos los campos');
+    if (!validateEmail(formData.email)) {
+      setErrorMsg('❌ El correo no es válido. Usa el formato: correo@ejemplo.com');
       return;
+    }
+
+    if (!validatePassword(formData.password)) {
+      setErrorMsg('❌ La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    if (!isLogin) {
+      if (!validateUsername(formData.username)) {
+        setErrorMsg('❌ El usuario debe tener al menos 3 caracteres');
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        setErrorMsg('❌ Las contraseñas no coinciden');
+        return;
+      }
     }
 
     try {
@@ -41,16 +65,31 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
       if (isLogin) {
         const { token, user } = await api.login({ email: formData.email, password: formData.password });
         localStorage.setItem('token', token);
-        onAuth({ username: user.username, email: user.email, role: user.role });
+        setSuccessMsg(`✅ ¡Bienvenido de vuelta, ${user.username}!`);
+        setTimeout(() => {
+          onAuth({ username: user.username, email: user.email, role: user.role });
+          onClose();
+        }, 800);
       } else {
         const { token, user } = await api.register({ email: formData.email, username: formData.username, password: formData.password });
         localStorage.setItem('token', token);
-        onAuth({ username: user.username, email: user.email, role: user.role });
+        setSuccessMsg(`✅ ¡Registro exitoso! Bienvenido ${user.username}`);
+        setTimeout(() => {
+          onAuth({ username: user.username, email: user.email, role: user.role });
+          onClose();
+        }, 800);
       }
-      onClose();
     } catch (err: any) {
       const msg = String(err?.message || 'Error de autenticación');
-      setErrorMsg(msg.includes('Credenciales inválidas') ? 'Correo o contraseña incorrectos.' : msg);
+      if (msg.includes('Credenciales inválidas')) {
+        setErrorMsg('❌ Correo o contraseña incorrectos');
+      } else if (msg.includes('ya existe')) {
+        setErrorMsg('❌ El correo ya está registrado. Intenta con otro o inicia sesión');
+      } else if (msg.includes('usuario')) {
+        setErrorMsg('❌ El usuario ya existe. Por favor elige otro');
+      } else {
+        setErrorMsg(`❌ ${msg}`);
+      }
     }
     finally { setSubmitting(false); }
   };
@@ -82,6 +121,17 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
             {isLogin ? 'Continúa tu partida' : 'Únete a la comunidad'}
           </p>
         </div>
+
+        {/* Success banner */}
+        {successMsg && (
+          <div className="mx-4 sm:mx-6 mt-4 rounded border-2 border-green-600/60 bg-gradient-to-r from-green-900/60 to-emerald-900/50 text-green-100 px-3 sm:px-4 py-2 flex items-start gap-2 text-xs sm:text-sm" role="status">
+            <span className="flex-shrink-0 text-lg">✓</span>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold" style={{ fontFamily: 'monospace' }}>Éxito</div>
+              <div className="text-xs">{successMsg}</div>
+            </div>
+          </div>
+        )}
 
         {/* Error banner */}
         {errorMsg && (

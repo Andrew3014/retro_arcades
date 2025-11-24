@@ -130,28 +130,28 @@ export function AdminPage({ onBack }: AdminPageProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <button onClick={onBack} className="flex items-center gap-2 text-purple-300 hover:text-purple-100 active:text-purple-50 mb-6 transition-colors duration-200 ease-out hover:scale-105 active:scale-95">
-        <ArrowLeft className="w-5 h-5" /> Volver a inicio
+    <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+      <button onClick={onBack} className="flex items-center gap-2 text-purple-300 hover:text-purple-100 active:text-purple-50 mb-4 sm:mb-6 transition-colors duration-200 ease-out hover:scale-105 active:scale-95 text-sm sm:text-base">
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" /> Volver a inicio
       </button>
 
       {/* Toasts */}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
+      <div className="fixed top-2 sm:top-4 right-2 sm:right-4 z-50 space-y-2 max-w-xs">
         {toasts.map(t => (
-          <div key={t.id} className={`flex items-center gap-2 px-4 py-3 rounded border ${
+          <div key={t.id} className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded border text-xs sm:text-sm ${
             t.type === 'success' 
               ? 'bg-green-900/80 border-green-500/60 text-green-100'
               : 'bg-red-900/80 border-red-500/60 text-red-100'
           }`}>
-            {t.type === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-            {t.message}
+            {t.type === 'success' ? <Check className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" /> : <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />}
+            <span className="break-words">{t.message}</span>
           </div>
         ))}
       </div>
 
-      <h1 className="text-white mb-4" style={{ fontFamily: 'monospace' }}>Panel Admin</h1>
+      <h1 className="text-white mb-4 sm:mb-6 text-lg sm:text-2xl" style={{ fontFamily: 'monospace' }}>🔧 PANEL ADMIN</h1>
       {overview && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
           <Stat label="Usuarios" value={overview.users} />
           <Stat label="Puntajes" value={overview.scores} />
           <Stat label="Comentarios" value={overview.comments} />
@@ -159,45 +159,44 @@ export function AdminPage({ onBack }: AdminPageProps) {
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-4">
-          <h2 className="text-purple-200 mb-3">Comentarios</h2>
-          <div className="space-y-3 max-h-[400px] overflow-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+        <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-3 sm:p-4">
+          <h2 className="text-purple-200 mb-3 text-sm sm:text-base">Comentarios</h2>
+          <div className="space-y-2 sm:space-y-3 max-h-[300px] sm:max-h-[400px] overflow-auto">
             {comments.length === 0 ? (
-              <p className="text-gray-400 text-sm">Sin comentarios</p>
+              <p className="text-gray-400 text-xs sm:text-sm">Sin comentarios</p>
             ) : (
               comments.map((c) => (
-                <div key={c.id} className="border border-purple-500/30 rounded p-3 flex items-start justify-between gap-2">
+                <div key={c.id} className="border border-purple-500/30 rounded p-2 sm:p-3 flex items-start justify-between gap-2 text-xs sm:text-sm">
                   <div className="min-w-0 flex-1">
-                    <div className="text-white text-sm font-semibold truncate">{c.username} • {c.game}</div>
-                    <div className="text-gray-300 text-sm break-words">{c.content}</div>
+                    <div className="text-white font-semibold truncate">{c.username} • {c.game}</div>
+                    <div className="text-gray-300 break-words line-clamp-2">{c.content}</div>
                     <div className="text-gray-500 text-xs mt-1">{new Date(c.created_at).toLocaleString()}</div>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    className="border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out flex-shrink-0"
+                  <button 
+                    className="border border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out flex-shrink-0 px-2 py-1 rounded text-xs"
                     disabled={loading[c.id]}
                     onClick={() => deleteComment(c.id)}
                   >
-                    {loading[c.id] ? 'Eliminando...' : 'Eliminar'}
-                  </Button>
+                    {loading[c.id] ? '...' : '✕'}
+                  </button>
                 </div>
               ))
             )}
           </div>
         </div>
 
-        <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-4">
-          <h2 className="text-purple-200 mb-3">Reportes</h2>
-          <div className="space-y-3 max-h-[400px] overflow-auto">
+        <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-3 sm:p-4">
+          <h2 className="text-purple-200 mb-3 text-sm sm:text-base">Reportes</h2>
+          <div className="space-y-2 sm:space-y-3 max-h-[300px] sm:max-h-[400px] overflow-auto">
             {reports.length === 0 ? (
-              <p className="text-gray-400 text-sm">Sin reportes</p>
+              <p className="text-gray-400 text-xs sm:text-sm">Sin reportes</p>
             ) : (
               reports.map((r) => (
-                <div key={r.id} className="border border-purple-500/30 rounded p-3">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="text-white text-sm font-semibold">{r.username} • {r.game}</div>
+                <div key={r.id} className="border border-purple-500/30 rounded p-2 sm:p-3 text-xs sm:text-sm">
+                  <div className="flex items-start justify-between mb-2 flex-wrap gap-1">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-white font-semibold truncate">{r.username} • {r.game}</div>
                       <div className="text-gray-400 text-xs mt-1">{new Date(r.created_at).toLocaleString()}</div>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded font-semibold flex-shrink-0 ${
@@ -208,7 +207,7 @@ export function AdminPage({ onBack }: AdminPageProps) {
                       {r.status === 'open' ? 'ABIERTO' : r.status === 'reviewed' ? 'REVISADO' : 'ARREGLADO'}
                     </span>
                   </div>
-                  <div className="text-gray-300 text-sm mb-3 break-words">{r.content}</div>
+                  <div className="text-gray-300 mb-3 break-words line-clamp-2">{r.content}</div>
                   <div className="flex gap-2 flex-wrap">
                     <Button 
                       size="sm" 
@@ -242,42 +241,43 @@ export function AdminPage({ onBack }: AdminPageProps) {
         </div>
       </div>
 
-      <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-4 mt-6">
-        <h2 className="text-purple-200 mb-3">Puntajes (CRUD)</h2>
-        <div className="flex flex-wrap gap-3 mb-4 text-sm">
+      <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-3 sm:p-4 mt-4 sm:mt-6">
+        <h2 className="text-purple-200 mb-3 text-sm sm:text-base">Puntajes (CRUD)</h2>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 mb-4 text-xs sm:text-sm">
           <div className="flex items-center gap-2">
-            <label>Filtrar juego:</label>
-            <select className="bg-black/50 border border-purple-500/40 rounded px-2 py-1" value={filterGame} onChange={e=>setFilterGame(e.target.value)}>
+            <label className="flex-shrink-0">Filtrar:</label>
+            <select className="bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-xs" value={filterGame} onChange={e=>setFilterGame(e.target.value)}>
               <option value="">Todos</option>
               {[...new Set(scores.map(s=>s.game))].map(g=> <option key={g} value={g}>{g}</option>)}
             </select>
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={showDeleted} onChange={()=>setShowDeleted(!showDeleted)} /> Mostrar eliminados
+            <input type="checkbox" checked={showDeleted} onChange={()=>setShowDeleted(!showDeleted)} className="w-4 h-4" /> 
+            <span className="flex-shrink-0">Eliminados</span>
           </label>
         </div>
-        <div className="space-y-3 max-h-[420px] overflow-auto">
+        <div className="space-y-2 sm:space-y-3 max-h-[300px] sm:max-h-[420px] overflow-auto">
           {scores
             .filter(s=> !filterGame || s.game===filterGame)
             .filter(s=> showDeleted || s.is_deleted===0)
             .length === 0 ? (
-            <p className="text-gray-400 text-sm">Sin puntajes</p>
+            <p className="text-gray-400 text-xs sm:text-sm">Sin puntajes</p>
           ) : (
             scores
               .filter(s=> !filterGame || s.game===filterGame)
               .filter(s=> showDeleted || s.is_deleted===0)
               .map((s) => (
-              <div key={s.id} className="border border-purple-500/30 rounded p-3 flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="text-white text-sm font-semibold truncate">{(s.ranking_name || s.username)} • {s.game}</div>
+              <div key={s.id} className="border border-purple-500/30 rounded p-2 sm:p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
+                <div className="min-w-0 flex-1 w-full">
+                  <div className="text-white font-semibold truncate">{(s.ranking_name || s.username)} • {s.game}</div>
                   <div className="text-gray-400 text-xs">{new Date(s.date).toLocaleString()}</div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 w-full sm:w-auto flex-wrap">
                   <input
                     type="number"
                     value={ (edits[s.id]?.score ?? s.score) }
                     min={0}
-                    className="w-24 bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-white"
+                    className="w-20 sm:w-24 bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-white text-xs"
                     onChange={(e) => {
                       const val = parseInt(e.target.value || '0', 10);
                       setEdits(prev => ({ ...prev, [s.id]: { ...prev[s.id], score: val, dirty: true } }));
