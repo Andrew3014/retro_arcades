@@ -275,5 +275,6 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
