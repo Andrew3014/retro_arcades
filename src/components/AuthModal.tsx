@@ -95,55 +95,87 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-gradient-to-br from-slate-900 to-purple-900 border-2 sm:border-4 border-purple-500 rounded-lg shadow-2xl overflow-hidden max-h-screen sm:max-h-none overflow-y-auto sm:overflow-visible"
-        style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.6)' }}>
-        
-        {/* Header */}
-        <div className="relative bg-black/50 p-4 sm:p-6 border-b-2 border-purple-500/50">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white active:text-purple-300 transition-colors duration-200 ease-out"
-          >
-            <X className="w-6 h-6" />
-          </button>
-          
-          <div className="flex items-center gap-2 sm:gap-3 mb-2">
-            <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400 flex-shrink-0" />
-            <h2 className="text-white text-lg sm:text-xl font-bold" style={{
-              textShadow: '0 0 10px rgba(168, 85, 247, 0.8)',
+    <>
+      {/* Notificación de Éxito Flotante - Encima de todo */}
+      {successMsg && (
+        <div 
+          className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] w-full max-w-sm mx-auto px-4 sm:px-0 animate-in fade-in slide-in-from-top-2 duration-300"
+          role="status"
+        >
+          <div className="relative bg-gradient-to-r from-green-600 to-emerald-600 border-2 border-green-400 rounded-lg shadow-2xl overflow-hidden"
+            style={{ 
+              boxShadow: '0 0 30px rgba(34, 197, 94, 0.8)',
               fontFamily: 'monospace'
-            }}>
-              {isLogin ? 'INICIAR' : 'REGISTRAR'}
-            </h2>
+            }}
+          >
+            {/* Animación de brillo */}
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent animate-pulse"></div>
+            
+            <div className="relative px-4 sm:px-6 py-4 flex items-center gap-3">
+              <div className="flex-shrink-0">
+                <span className="text-2xl sm:text-3xl">✨</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-white text-sm sm:text-base">¡ÉXITO!</div>
+                <div className="text-green-100 text-xs sm:text-sm break-words">{successMsg}</div>
+              </div>
+              <div className="flex-shrink-0 animate-bounce">
+                <span className="text-xl">🎮</span>
+              </div>
+            </div>
           </div>
-          <p className="text-purple-200 text-xs sm:text-sm leading-snug">
-            {isLogin ? 'Continúa tu partida' : 'Únete a la comunidad'}
-          </p>
         </div>
+      )}
 
-        {/* Success banner */}
-        {successMsg && (
-          <div className="mx-4 sm:mx-6 mt-4 rounded border-2 border-green-600/60 bg-gradient-to-r from-green-900/60 to-emerald-900/50 text-green-100 px-3 sm:px-4 py-2 flex items-start gap-2 text-xs sm:text-sm" role="status">
-            <span className="flex-shrink-0 text-lg">✓</span>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold" style={{ fontFamily: 'monospace' }}>Éxito</div>
-              <div className="text-xs">{successMsg}</div>
+      {/* Modal Principal */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm">
+        <div className="relative w-full max-w-md bg-gradient-to-br from-slate-900 to-purple-900 border-2 sm:border-4 border-purple-500 rounded-lg shadow-2xl overflow-hidden max-h-screen sm:max-h-none overflow-y-auto sm:overflow-visible"
+          style={{ boxShadow: '0 0 40px rgba(168, 85, 247, 0.6)' }}>
+          
+          {/* Header */}
+          <div className="relative bg-black/50 p-4 sm:p-6 border-b-2 border-purple-500/50">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white active:text-purple-300 transition-colors duration-200 ease-out"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            
+            <div className="flex items-center gap-2 sm:gap-3 mb-2">
+              <Gamepad2 className="w-6 h-6 sm:w-8 sm:h-8 text-purple-400 flex-shrink-0" />
+              <h2 className="text-white text-lg sm:text-xl font-bold" style={{
+                textShadow: '0 0 10px rgba(168, 85, 247, 0.8)',
+                fontFamily: 'monospace'
+              }}>
+                {isLogin ? 'INICIAR' : 'REGISTRAR'}
+              </h2>
             </div>
+            <p className="text-purple-200 text-xs sm:text-sm leading-snug">
+              {isLogin ? 'Continúa tu partida' : 'Únete a la comunidad'}
+            </p>
           </div>
-        )}
 
-        {/* Error banner */}
-        {errorMsg && (
-          <div className="mx-4 sm:mx-6 mt-4 rounded border-2 border-pink-600/60 bg-gradient-to-r from-pink-900/60 to-red-900/50 text-pink-100 px-3 sm:px-4 py-2 flex items-start gap-2 text-xs sm:text-sm" role="alert">
-            <span className="flex-shrink-0">⚠️</span>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold" style={{ fontFamily: 'monospace' }}>Error</div>
-              <div className="text-xs">{errorMsg}</div>
+          {/* Error banner dentro del modal */}
+          {errorMsg && (
+            <div className="mx-4 sm:mx-6 mt-4 rounded border-2 border-red-500/70 bg-gradient-to-r from-red-900/80 to-pink-900/70 px-3 sm:px-4 py-3 flex items-start gap-2 text-xs sm:text-sm animate-pulse" role="alert"
+              style={{ 
+                boxShadow: '0 0 20px rgba(239, 68, 68, 0.5)',
+                fontFamily: 'monospace'
+              }}
+            >
+              <span className="flex-shrink-0 text-lg">⚠️</span>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-red-100">Error</div>
+                <div className="text-red-100 text-xs">{errorMsg}</div>
+              </div>
+              <button 
+                onClick={() => setErrorMsg('')} 
+                className="text-red-100 hover:text-white active:text-red-300 transition-colors duration-200 ease-out flex-shrink-0 font-bold"
+              >
+                ✕
+              </button>
             </div>
-            <button onClick={() => setErrorMsg('')} className="text-pink-200 hover:text-white active:text-pink-400 transition-colors duration-200 ease-out flex-shrink-0">✕</button>
-          </div>
-        )}
+          )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
