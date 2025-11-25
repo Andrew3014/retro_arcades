@@ -167,19 +167,20 @@ export function AdminPage({ onBack }: AdminPageProps) {
               <p className="text-gray-400 text-xs sm:text-sm">Sin comentarios</p>
             ) : (
               comments.map((c) => (
-                <div key={c.id} className="border border-purple-500/30 rounded p-2 sm:p-3 flex items-start justify-between gap-2 text-xs sm:text-sm">
+                <div key={c.id} className="border border-purple-500/30 rounded p-2 sm:p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm">
                   <div className="min-w-0 flex-1">
                     <div className="text-white font-semibold truncate">{c.username} • {c.game}</div>
                     <div className="text-gray-300 break-words line-clamp-2">{c.content}</div>
                     <div className="text-gray-500 text-xs mt-1">{new Date(c.created_at).toLocaleString()}</div>
                   </div>
-                  <button 
-                    className="border border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out flex-shrink-0 px-2 py-1 rounded text-xs"
+                  <Button 
+                    variant="outline"
+                    className="border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out flex-shrink-0 text-xs"
                     disabled={loading[c.id]}
                     onClick={() => deleteComment(c.id)}
                   >
-                    {loading[c.id] ? '...' : '✕'}
-                  </button>
+                    {loading[c.id] ? 'Eliminando...' : 'Eliminar'}
+                  </Button>
                 </div>
               ))
             )}
