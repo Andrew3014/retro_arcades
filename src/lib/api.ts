@@ -51,6 +51,11 @@ export const api = {
   adminUpdateScore: (id: number, score: number) => http(`/admin/scores/${id}`, { method: 'PUT', body: JSON.stringify({ score }) }),
   adminDeleteScore: (id: number) => http(`/admin/scores/${id}`, { method: 'DELETE' }),
   adminUsers: () => http('/admin/users'),
+  adminDeleteUser: (userId: number) => http(`/admin/users/${userId}`, { method: 'DELETE' }),
   adminUpdateRankingName: (userId: number, game: string, rankingName: string) =>
     http('/admin/ranking-name', { method: 'PUT', body: JSON.stringify({ userId, game, rankingName }) }),
+  checkRankingNameExists: (game: string, name: string, userId?: number) =>
+    http(`/admin/check-ranking-name?game=${game}&name=${encodeURIComponent(name)}&userId=${userId || 0}`)
+      .then(res => res)
+      .catch(() => ({ exists: false })),
 };

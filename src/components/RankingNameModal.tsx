@@ -1,26 +1,74 @@
 /// <reference types="react" />
 /// <reference types="react/jsx-runtime" />
 import React, { useState } from 'react';
-import { X, User, BadgeCheck } from 'lucide-react';
+import { X, User, BadgeCheck, AlertCircle } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
+import { api } from '../lib/api';
 
 interface RankingNameModalProps {
   open: boolean;
   defaultName: string;
+  game?: string;
+  userId?: number;
   onConfirm: (name: string) => void;
   onCancel: () => void;
 }
 
-export function RankingNameModal({ open, defaultName, onConfirm, onCancel }: RankingNameModalProps) {
+export function RankingNameModal({ open, defaultName, game, userId, onConfirm, onCancel }: RankingNameModalProps) {
   const [name, setName] = useState(defaultName || '');
+  const [error, setError] = useState('');
+  const [checking, setChecking] = useState(false);
+
   if (!open) return null;
 
-  const submit = (e: any) => {
+  const validateName = (n: string) => {
+    const trimmed = n.trim();
+    if (trimmed.length < 3) return 'El nombre debe tener al menos 3 caracteres';
+    if (trimmed.length > 30) return 'El nombre no debe superar 30 caracteres';
+    if (!/^[a-zA-Z0-9_\-\s]+$/.test(trimmed)) {
+      return 'Solo se permiten letras, números, espacios, guiones y guiones bajos';
+    }
+    return '';
+  };
+
+  const submit = async (e: any) => {
     e.preventDefault();
     const trimmed = name.trim();
-    onConfirm(trimmed.length >= 3 ? trimmed : defaultName);
+    
+    // Validar formato
+    const validationError = validateName(trimmed);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    // Si es el nombre por defecto, no validar duplicados
+    if (trimmed === defaultName) {
+      onConfirm(trimmed);
+      return;
+    }
+
+    // Validar que no sea un nombre duplicado en el ranking
+    if (game && userId) {
+      setChecking(true);
+      try {
+        const result = await api.checkRankingNameExists(game, trimmed, userId);
+        if (result.exists) {
+          setError('❌ Este nombre ya existe en el ranking. Elige otro');
+          setChecking(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('Error verificando nombre:', err);
+        // Continuar igualmente
+      }
+      setChecking(false);
+    }
+
+    setError('');
+    onConfirm(trimmed || defaultName);
   };
 
   return (
@@ -49,16 +97,29 @@ export function RankingNameModal({ open, defaultName, onConfirm, onCancel }: Ran
               id="rankingName"
               type="text"
               value={name}
-              onChange={(e: any) => setName(e.target.value)}
+              onChange={(e: any) => {
+                setName(e.target.value);
+                setError('');
+              }}
               className="bg-black/50 border-purple-500/50 text-white focus:border-purple-400"
               placeholder={defaultName}
               maxLength={30}
+              disabled={checking}
             />
             <p className="text-xs text-gray-400">Si lo dejas vacío, usaremos tu nombre de usuario: <span className="text-purple-300">{defaultName}</span></p>
+            
+            {error && (
+              <div className="flex items-start gap-2 p-3 rounded bg-red-900/30 border border-red-500/50 text-red-200 text-xs">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
           </div>
           <div className="flex gap-3">
-            <Button type="button" variant="outline" onClick={onCancel} className="border-purple-500/50 text-purple-200 hover:bg-purple-600/30 active:bg-purple-700/40 active:scale-95 hover:text-white transition-all duration-200 ease-out w-1/3">Cancelar</Button>
-            <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 active:scale-95 transition-all duration-200 ease-out w-2/3" style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }}>Confirmar</Button>
+            <Button type="button" variant="outline" onClick={onCancel} className="border-purple-500/50 text-purple-200 hover:bg-purple-600/30 active:bg-purple-700/40 active:scale-95 hover:text-white transition-all duration-200 ease-out w-1/3" disabled={checking}>Cancelar</Button>
+            <Button type="submit" className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 active:scale-95 transition-all duration-200 ease-out w-2/3" style={{ boxShadow: '0 0 20px rgba(168, 85, 247, 0.5)' }} disabled={checking}>
+              {checking ? 'Validando...' : 'Confirmar'}
+            </Button>
           </div>
         </form>
       </div>

@@ -23,8 +23,10 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
   const [submitting, setSubmitting] = useState(false);
 
   const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePassword = (pwd: string) => pwd.length >= 6;
-  const validateUsername = (uname: string) => uname.length >= 3;
+  const validatePassword = (pwd: string) => pwd.length >= 6 && pwd.length <= 100;
+  const validateUsername = (uname: string) => uname.length >= 3 && uname.length <= 30;
+  
+  const sanitizeInput = (input: string) => input.trim();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,30 +34,60 @@ export function AuthModal({ onClose, onAuth }: AuthModalProps) {
     setSuccessMsg('');
     if (submitting) return;
 
-    // Validaciones detalladas
-    if (!formData.email || !formData.password || (!isLogin && !formData.username)) {
+    // Validaciones detalladas mejoradas
+    const email = sanitizeInput(formData.email);
+    const password = formData.password; // No trim para contraseñas (espacios intencionales)
+    const username = sanitizeInput(formData.username);
+    const confirmPassword = formData.confirmPassword;
+
+    // Validar campos requeridos
+    if (!email || !password || (!isLogin && !username)) {
       setErrorMsg('❌ Por favor completa todos los campos requeridos');
       return;
     }
 
-    if (!validateEmail(formData.email)) {
+    // Validar email
+    if (!validateEmail(email)) {
       setErrorMsg('❌ El correo no es válido. Usa el formato: correo@ejemplo.com');
       return;
     }
 
-    if (!validatePassword(formData.password)) {
-      setErrorMsg('❌ La contraseña debe tener al menos 6 caracteres');
+    // Validar contraseña
+    if (!validatePassword(password)) {
+      if (password.length < 6) {
+        setErrorMsg('❌ La contraseña debe tener al menos 6 caracteres');
+      } else {
+        setErrorMsg('❌ La contraseña no debe superar 100 caracteres');
+      }
       return;
     }
 
     if (!isLogin) {
-      if (!validateUsername(formData.username)) {
-        setErrorMsg('❌ El usuario debe tener al menos 3 caracteres');
+      // Validar nombre de usuario en registro
+      if (!validateUsername(username)) {
+        if (username.length < 3) {
+          setErrorMsg('❌ El usuario debe tener al menos 3 caracteres');
+        } else {
+          setErrorMsg('❌ El usuario no debe superar 30 caracteres');
+        }
         return;
       }
 
-      if (formData.password !== formData.confirmPassword) {
+      // Validar que el usuario no sea solo espacios
+      if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+        setErrorMsg('❌ El usuario solo puede contener letras, números, guiones y guiones bajos');
+        return;
+      }
+
+      // Validar coincidencia de contraseñas
+      if (password !== confirmPassword) {
         setErrorMsg('❌ Las contraseñas no coinciden');
+        return;
+      }
+
+      // Validar que las contraseñas no sean iguales al usuario
+      if (password.toLowerCase() === username.toLowerCase()) {
+        setErrorMsg('❌ La contraseña no puede ser igual al nombre de usuario');
         return;
       }
     }

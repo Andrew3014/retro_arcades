@@ -99,4 +99,48 @@ router.put('/ranking-name', requireRole('admin'), async (req, res) => {
   res.json({ ok: true });
 });
 
+// Validar si un nombre de ranking ya existe en un juego (para evitar duplicados)
+router.get('/check-ranking-name', async (req, res) => {
+  const { game, name, userId } = req.query;
+  if (!game || !name) {
+    return res.status(400).json({ error: 'Datos inválidos' });
+  }
+  const [[g]] = await pool.query('SELECT id FROM games WHERE slug = ?', [game]);
+  if (!g) return res.status(404).json({ error: 'Juego no encontrado' });
+  
+  const [rows] = await pool.query(
+    'SELECT user_id FROM user_games WHERE game_id = ? AND ranking_name = ? AND user_id != ?',
+    [g.id, String(name).trim(), userId || 0]
+  );
+  res.json({ exists: rows.length > 0 });
+});
+
+// Eliminar usuario (admin)
+router.delete('/users/:userId', requireRole('admin'), async (req, res) => {
+  const { userId } = req.params;
+  if (!userId || parseInt(userId) <= 0) {
+    return res.status(400).json({ error: 'ID de usuario inválido' });
+  }
+  
+  const [[u]] = await pool.query('SELECT id, role FROM users WHERE id = ?', [userId]);
+  if (!u) return res.status(404).json({ error: 'Usuario no encontrado' });
+  
+  // Prevenir eliminar el último admin
+  if (u.role === 'admin') {
+    const [[admin_count]] = await pool.query('SELECT COUNT(*) as count FROM users WHERE role = "admin"');
+    if (admin_count.count <= 1) {
+      return res.status(400).json({ error: 'No se puede eliminar el último administrador' });
+    }
+  }
+  
+  // Eliminar datos del usuario en orden (respetando FK)
+  await pool.query('DELETE FROM user_games WHERE user_id = ?', [userId]);
+  await pool.query('DELETE FROM scores WHERE user_id = ?', [userId]);
+  await pool.query('DELETE FROM comments WHERE user_id = ?', [userId]);
+  await pool.query('DELETE FROM reports WHERE user_id = ?', [userId]);
+  await pool.query('DELETE FROM users WHERE id = ?', [userId]);
+  
+  res.json({ ok: true });
+});
+
 module.exports = router;

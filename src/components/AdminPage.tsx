@@ -245,15 +245,15 @@ export function AdminPage({ onBack }: AdminPageProps) {
         <h2 className="text-purple-200 mb-3 text-sm sm:text-base">Puntajes (CRUD)</h2>
         <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 mb-4 text-xs sm:text-sm">
           <div className="flex items-center gap-2">
-            <label className="flex-shrink-0">Filtrar:</label>
-            <select className="bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-xs" value={filterGame} onChange={e=>setFilterGame(e.target.value)}>
-              <option value="">Todos</option>
+            <label className="flex-shrink-0 text-white">Filtrar:</label>
+            <select className="bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-xs text-white" value={filterGame} onChange={e=>setFilterGame(e.target.value)}>
+              <option value="">Todos los juegos</option>
               {[...new Set(scores.map(s=>s.game))].map(g=> <option key={g} value={g}>{g}</option>)}
             </select>
           </div>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={showDeleted} onChange={()=>setShowDeleted(!showDeleted)} className="w-4 h-4" /> 
-            <span className="flex-shrink-0">Eliminados</span>
+          <label className="flex items-center gap-2 cursor-pointer text-white hover:text-purple-300 transition-colors">
+            <input type="checkbox" checked={showDeleted} onChange={()=>setShowDeleted(!showDeleted)} className="w-4 h-4 cursor-pointer" /> 
+            <span className="flex-shrink-0">Mostrar eliminados</span>
           </label>
         </div>
         <div className="space-y-2 sm:space-y-3 max-h-[300px] sm:max-h-[420px] overflow-auto">
@@ -269,7 +269,7 @@ export function AdminPage({ onBack }: AdminPageProps) {
               .map((s) => (
               <div key={s.id} className="border border-purple-500/30 rounded p-2 sm:p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
                 <div className="min-w-0 flex-1 w-full">
-                  <div className="text-white font-semibold truncate">{(s.ranking_name || s.username)} • {s.game}</div>
+                  <div className="text-white font-semibold truncate">{(s.ranking_name || s.username)} • <span className="text-purple-300 bg-purple-900/30 px-2 py-0.5 rounded text-xs">{s.game}</span></div>
                   <div className="text-gray-400 text-xs">{new Date(s.date).toLocaleString()}</div>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 w-full sm:w-auto flex-wrap">
@@ -286,23 +286,23 @@ export function AdminPage({ onBack }: AdminPageProps) {
                   <input
                     type="text"
                     value={ (edits[s.id]?.rankingName ?? (s.ranking_name || '')) }
-                    placeholder="Ranking name"
-                    className="w-32 bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-white"
+                    placeholder="Nombre"
+                    className="w-32 bg-black/50 border border-purple-500/40 rounded px-2 py-1 text-white text-xs"
                     onChange={(e) => {
                       const val = e.target.value;
                       setEdits(prev => ({ ...prev, [s.id]: { ...prev[s.id], rankingName: val, dirty: true } }));
                     }}
                   />
-                  <Button size="sm" className="bg-purple-700 hover:bg-purple-600 active:scale-95 disabled:opacity-50 transition-all duration-200 ease-out text-white" disabled={!edits[s.id]?.dirty || edits[s.id]?.saving} onClick={() => saveRow(s)}>
-                    {edits[s.id]?.saving ? 'Guardando...' : 'Guardar'}
+                  <Button size="sm" className="bg-purple-700 hover:bg-purple-600 active:scale-95 disabled:opacity-50 transition-all duration-200 ease-out text-white text-xs" disabled={!edits[s.id]?.dirty || edits[s.id]?.saving} onClick={() => saveRow(s)}>
+                    {edits[s.id]?.saving ? '...' : 'Guardar'}
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out"
+                    className="border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out text-xs"
                     disabled={loading[s.id]}
                     onClick={() => deleteScore(s.id)}
                   >
-                    {loading[s.id] ? 'Eliminando...' : 'Eliminar'}
+                    {loading[s.id] ? '...' : 'X'}
                   </Button>
                 </div>
               </div>
@@ -312,16 +312,43 @@ export function AdminPage({ onBack }: AdminPageProps) {
       </div>
 
       <div className="bg-black/50 border-2 border-purple-500/50 rounded-lg p-4 mt-6">
-        <h2 className="text-purple-200 mb-3">Usuarios</h2>
+        <h2 className="text-purple-200 mb-3 text-sm sm:text-base">Usuarios (CRUD)</h2>
         <div className="space-y-2 max-h-[420px] overflow-auto text-sm">
           {users.length === 0 ? (
             <p className="text-gray-400">Sin usuarios</p>
           ) : (
             users.map(u => (
-              <div key={u.id} className="border border-purple-500/30 rounded p-3 flex flex-col gap-1">
-                <div className="text-white font-semibold">{u.username} <span className={`text-xs px-2 py-0.5 rounded ${u.role === 'admin' ? 'bg-red-900/50 text-red-200' : 'bg-blue-900/50 text-blue-200'}`}>{u.role.toUpperCase()}</span></div>
-                <div className="text-gray-300 break-all">{u.email}</div>
-                <div className="text-gray-400 text-xs">Creado: {new Date(u.created_at).toLocaleString()}</div>
+              <div key={u.id} className="border border-purple-500/30 rounded p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="text-white font-semibold flex items-center gap-2 flex-wrap">
+                    <span>{u.username}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded font-semibold ${u.role === 'admin' ? 'bg-red-900/50 text-red-200' : 'bg-blue-900/50 text-blue-200'}`}>
+                      {u.role.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="text-gray-300 break-all text-sm">{u.email}</div>
+                  <div className="text-gray-400 text-xs mt-1">Creado: {new Date(u.created_at).toLocaleString()}</div>
+                </div>
+                <Button
+                  variant="outline"
+                  className="border-red-500/50 text-red-200 hover:bg-red-900/20 active:scale-95 transition-all duration-200 ease-out text-xs flex-shrink-0"
+                  disabled={loading[u.id]}
+                  onClick={async () => {
+                    if (!window.confirm(`¿Eliminar usuario ${u.username}? Esta acción no se puede deshacer.`)) return;
+                    setLoading(prev => ({ ...prev, [u.id]: true }));
+                    try {
+                      await api.adminDeleteUser(u.id);
+                      addToast('Usuario eliminado exitosamente');
+                      await load();
+                    } catch (e: any) {
+                      addToast(e.message || 'Error al eliminar usuario', 'error');
+                    } finally {
+                      setLoading(prev => ({ ...prev, [u.id]: false }));
+                    }
+                  }}
+                >
+                  {loading[u.id] ? 'Eliminando...' : 'Eliminar'}
+                </Button>
               </div>
             ))
           )}

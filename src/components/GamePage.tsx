@@ -560,6 +560,8 @@ export function GamePage({ game, onBack, user }: GamePageProps) {
         <RankingNameModal
           open={showNameModal}
           defaultName={user.username || 'Jugador'}
+          game={game}
+          userId={user.id}
           onConfirm={async (name: string) => {
             setShowNameModal(false);
             const s = pendingScore;
